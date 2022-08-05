@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"github.com/goccy/go-json"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/goccy/go-json"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var ZapLogger *zap.Logger

@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"multisigdb-svc/client"
-	"multisigdb-svc/config"
 	"multisigdb-svc/db_utils"
-	"multisigdb-svc/pkg/utils"
+	"multisigdb-svc/utils"
 )
+
+// TODO: Use a better way to match the error instead the emssage
+var KnownTLSError = "Post \"https://testnet-algorand.api.purestake.io/ps2/v2/transactions\": net/http: TLS handshake timeout"
 
 var logger = utils.GetLoggerInstance()
 
@@ -30,7 +32,7 @@ func BroadCastTheSignedTxn() {
 
 		_, err = algodClient.SendRawTransaction(mergeTxns).Do(context.Background())
 		if err != nil {
-			if err.Error() == config.KnownTLSError {
+			if err.Error() == KnownTLSError {
 				logger.Error(fmt.Sprintf("Failed to send transaction %s with TLS error trying in next round", txnId))
 				return
 			}

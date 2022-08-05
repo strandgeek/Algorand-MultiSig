@@ -1,0 +1,8 @@
+server:
+  host: 127.0.0.1
+  port: 8082
+
+algorand:
+  address: https://testnet-algorand.api.purestake.io/ps2
+  api_header: X-API-Key
+  api_token: <YOUR_API_TOKEN>

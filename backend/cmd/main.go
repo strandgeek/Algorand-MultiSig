@@ -1,15 +1,18 @@
 package main
 
 import (
-	"github.com/robfig/cron/v3"
-	"go.uber.org/zap"
 	"multisigdb-svc/db"
-	"multisigdb-svc/pkg/utils"
 	"multisigdb-svc/router"
 	"multisigdb-svc/service"
+	"multisigdb-svc/utils"
+
+	"github.com/robfig/cron/v3"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 func main() {
+	utils.LoadViperConfig()
 	var err error
 	logger := utils.GetLoggerInstance()
 
@@ -26,7 +29,8 @@ func main() {
 	broadCastTxnJob.Start()
 
 	r := router.SetupRouter()
-	if err = r.Run(":8081"); err != nil {
+	addr := viper.GetString("server.host") + ":" + viper.GetString("server.port")
+	if err = r.Run(addr); err != nil {
 		logger.Error("Error while binding the port with the error message ", zap.Error(err))
 	}
 

@@ -16,20 +16,45 @@ This repo, includes all of the code necessary to facilitate the signing of multi
 
 ### Backend
 
-```
-cd backend
+#### Setup Dependencies
+
+```bash
+$ cd backend
+$ go mod tidy
 ```
 
-```
-go mod tidy
+#### Configuration
+
+##### Using YAML
+
+Create a `config.yaml` file:
+
+```yaml
+server:
+  host: 127.0.0.1
+  port: 8082
+
+algorand:
+  address: https://testnet-algorand.api.purestake.io/ps2
+  api_header: X-API-Key
+  api_token: <YOUR_API_TOKEN>
 ```
 
-```
-cd cmd
-```
+##### Using Environment Variables
 
-```
-go run main.go
+You can use environment variables to configure the service as well:
+
+- SERVER_HOST
+- SERVER_PORT
+- ALGORAND_ADDRESS
+- ALGORAND_API_HEADER
+- ALGORAND_API_TOKEN
+
+
+#### Running the service
+
+```bash
+$ go run cmd/main.go
 ```
 
 After the above commands have been executed you will have the backend service running on localhost:8081
