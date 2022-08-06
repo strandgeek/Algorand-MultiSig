@@ -2,9 +2,11 @@ package multisigaccountsvc
 
 import (
 	"multisigdb-svc/model"
+	"multisigdb-svc/utils/algoutil"
 	"multisigdb-svc/utils/dbutil"
 	"multisigdb-svc/utils/paginateutil"
 
+	"github.com/algorand/go-algorand-sdk/crypto"
 	"gorm.io/gorm"
 )
 
@@ -19,8 +21,8 @@ func NewMultiSigAccountService(db *gorm.DB) *MultiSigAccountService {
 }
 
 type CreateInput struct {
-	Version   int      `json:"version"`
-	Threshold int      `json:"threshold"`
+	Version   uint8    `json:"version"`
+	Threshold uint8    `json:"threshold"`
 	Addresses []string `json:"addresses"`
 }
 
@@ -41,9 +43,19 @@ func (s *MultiSigAccountService) Create(input CreateInput) (*model.MultiSigAccou
 		Accounts:  accounts,
 	}
 
+	algoMsa, err := crypto.MultisigAccountWithParams(msa.Version, msa.Threshold, algoutil.AccountsToAlgoAddresses(accounts))
+
 	if err != nil {
 		return nil, err
 	}
+
+	msaAddress, err := algoMsa.Address()
+
+	if err != nil {
+		return nil, err
+	}
+
+	msa.Address = msaAddress.String()
 
 	if err := s.db.Create(&msa).Error; err != nil {
 		return nil, err
