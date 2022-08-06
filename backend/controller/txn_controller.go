@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"multisigdb-svc/dto"
 	"multisigdb-svc/service"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AddRawTxn(ctx *gin.Context) {
@@ -34,6 +35,8 @@ func AddSingedTxn(ctx *gin.Context) {
 		return
 	}
 
+	signedTxn.TxnId = ctx.Param("txId")
+
 	resp, err := service.CreateSignedTransaction(signedTxn)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, resp)
@@ -43,7 +46,7 @@ func AddSingedTxn(ctx *gin.Context) {
 }
 
 func GetAllSignedTxn(ctx *gin.Context) {
-	txnId := ctx.Query("id")
+	txnId := ctx.Param("txId")
 	if txnId == "" {
 		resp := dto.Response{Success: false, Message: "Failed to process request send the valid data"}
 		ctx.JSON(http.StatusBadRequest, resp)
@@ -60,7 +63,7 @@ func GetAllSignedTxn(ctx *gin.Context) {
 }
 
 func GetSignedTxn(ctx *gin.Context) {
-	txnId := ctx.Query("id")
+	txnId := ctx.Param("signedTxId")
 	if txnId == "" {
 		resp := dto.Response{Success: false, Message: "Failed to process request send the valid data"}
 		ctx.JSON(http.StatusBadRequest, resp)
@@ -78,7 +81,7 @@ func GetSignedTxn(ctx *gin.Context) {
 }
 
 func GetRawTxn(ctx *gin.Context) {
-	txnId := ctx.Query("id")
+	txnId := ctx.Param("txId")
 	if txnId == "" {
 		resp := dto.Response{Success: false, Message: "Failed to process request send the valid data"}
 		ctx.JSON(http.StatusBadRequest, resp)

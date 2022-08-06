@@ -1,9 +1,10 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"multisigdb-svc/controller"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func CORS(c *gin.Context) {
@@ -35,14 +36,19 @@ func SetupRouter() *gin.Engine {
 
 	r.Use(CORS)
 
-	txn := r.Group("ms-multisig-db/v1")
+	ms := r.Group("ms-multisig")
 	{
-		txn.POST("addrawtxn", controller.AddRawTxn)
-		txn.GET("getrawtxn", controller.GetRawTxn)
+		v1 := ms.Group("v1")
+		{
+			v1.POST("/transactions", controller.AddRawTxn)
+			v1.GET("/transactions/:txId", controller.GetRawTxn)
 
-		txn.POST("addsignedtxn", controller.AddSingedTxn)
-		txn.GET("getallsignedtxn", controller.GetAllSignedTxn)
-		txn.GET("getsignedtxn", controller.GetSignedTxn)
+			v1.GET("/transactions/:txId/signatures", controller.GetAllSignedTxn)
+			v1.POST("/transactions/:txId/signatures", controller.AddSingedTxn)
+
+			// TODO: Verify the real use-case for this route on frontend
+			v1.GET("/transaction-signatures/:signedTxId", controller.GetSignedTxn)
+		}
 	}
 
 	return r
