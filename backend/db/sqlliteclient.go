@@ -1,6 +1,8 @@
 package db
 
 import (
+	"multisigdb-svc/model"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -12,33 +14,17 @@ func InitiateDbClient() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := CreateTable(db); err != nil {
+	if err := Migrate(db); err != nil {
 		return nil, err
 	}
 	return db, nil
 }
 
-func CreateTable(db *gorm.DB) error {
-	const rawQueryCreateSignedTxn = "CREATE TABLE IF NOT EXISTS SignedTxn ( " +
-		"id INTEGER PRIMARY KEY AUTOINCREMENT," +
-		"signer_public_address TEXT NOT NULL, " +
-		"signed_transaction TEXT NOT NULL, " +
-		"txn_id TEXT NOT NULL)"
-
-	tx := db.Exec(rawQueryCreateSignedTxn)
-	if tx.Error != nil {
-		return tx.Error
-	}
-
-	const rawQueryCreateTxn = "CREATE TABLE IF NOT EXISTS RawTransaction (" +
-		"raw_transaction TEXT NOT NULL, " +
-		"txn_id TEXT PRIMARY KEY NOT NULL," +
-		"number_of_signs_required INTEGER NOT NULL," +
-		"status TEXT)"
-
-	tx = db.Exec(rawQueryCreateTxn)
-	if tx.Error != nil {
-		return tx.Error
-	}
-	return nil
+func Migrate(db *gorm.DB) error {
+	// TODO: Use a migrations tool like golang-migrate
+	return db.AutoMigrate(
+		&model.Account{},
+		&model.RawTxn{},
+		&model.SignedTxn{},
+	)
 }
