@@ -1,8 +1,7 @@
 package main
 
 import (
-	"multisigdb-svc/db"
-	"multisigdb-svc/router"
+	"multisigdb-svc/api"
 	"multisigdb-svc/service"
 	"multisigdb-svc/utils"
 
@@ -18,7 +17,6 @@ func main() {
 
 	logger.Info("Multi-sig go service starting ...")
 
-	db.DbConnection, err = db.InitiateDbClient()
 	if err != nil {
 		logger.Error("Error in opening the connection with Error Message ", zap.Error(err))
 		return
@@ -28,10 +26,12 @@ func main() {
 	broadCastTxnJob.AddFunc("@every 1m", service.BroadCastTheSignedTxn)
 	broadCastTxnJob.Start()
 
-	r := router.SetupRouter()
+	api, err := api.SetupApi()
+	if err != nil {
+		logger.Error("Error while starting the API", zap.Error(err))
+	}
 	addr := viper.GetString("server.host") + ":" + viper.GetString("server.port")
-	if err = r.Run(addr); err != nil {
+	if err = api.Run(addr); err != nil {
 		logger.Error("Error while binding the port with the error message ", zap.Error(err))
 	}
-
 }
