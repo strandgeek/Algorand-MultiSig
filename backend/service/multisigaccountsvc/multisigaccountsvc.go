@@ -72,3 +72,11 @@ func (s *MultiSigAccountService) List(filter *ListFilter, paginate *paginateutil
 
 	return msaccounts, err
 }
+
+func (s *MultiSigAccountService) GetByAddress(address string) (model.MultiSigAccount, error) {
+	var msaccount model.MultiSigAccount
+
+	err := s.db.Preload("Accounts").Where("address = ?", address).First(&msaccount).Error
+
+	return msaccount, err
+}

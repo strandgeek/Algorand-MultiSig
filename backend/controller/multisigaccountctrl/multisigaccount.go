@@ -48,3 +48,19 @@ func (ctrl MultiSigAccountController) List(ctx *gin.Context) {
 	}
 	ctx.JSON(200, msa)
 }
+
+// Get a MultiSig Account by Address
+func (ctrl MultiSigAccountController) Get(ctx *gin.Context) {
+	address, exists := ctx.Params.Get("msAddress")
+	if !exists {
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+	msa, err := ctrl.svc.MultiSigAccount.GetByAddress(address)
+	fmt.Println(err)
+	if err != nil {
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+	ctx.JSON(200, msa)
+}
