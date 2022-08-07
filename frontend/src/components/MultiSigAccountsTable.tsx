@@ -57,7 +57,7 @@ export const MultiSigAccountsTable: FC<MultiSigAccountsTableProps> = ({ multiSig
         </tr>
       </thead>
       <tbody>
-        {multiSigAccounts.map(msa => <MultiSigAccountsTableRow multiSigAccount={msa} />)}
+        {multiSigAccounts.map(msa => <MultiSigAccountsTableRow key={msa.id} multiSigAccount={msa} />)}
       </tbody>
     </table>
   );
