@@ -17,7 +17,7 @@ func (m *Middlewares) Me() gin.HandlerFunc {
 			token := parts[1]
 			address, err := utils.ParseAccountJWT(token)
 			if err != nil {
-				c.AbortWithStatus(401)
+				c.Next()
 				return
 			}
 			var acc *model.Account
