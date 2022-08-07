@@ -1,8 +1,12 @@
 import React, { FC } from "react";
+import { useMeQuery } from "../../client/queries";
+import { getIdenticonSrc } from "../../utils/getIdenticonSrc";
 
 export interface NavbarProps {}
 
 export const Navbar: FC<NavbarProps> = (props) => {
+  const { data: me } = useMeQuery()
+  const meAvatar = getIdenticonSrc(me?.address)
   return (
     <div className="bg-base-100 border-b border-b-base-300">
       <div className="navbar max-w-8xl mx-auto">
@@ -29,7 +33,7 @@ export const Navbar: FC<NavbarProps> = (props) => {
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full">
-                  <img src="https://placeimg.com/80/80/people" />
+                  <img src={meAvatar} />
                 </div>
               </label>
               <ul

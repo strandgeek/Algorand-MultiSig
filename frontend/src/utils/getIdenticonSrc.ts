@@ -9,6 +9,9 @@ const getHexCode = (hash : string = ''): string => {
 }
 
 export const getIdenticonSrc = (hash?: string) => {
+  if (!hash || hash.length < 15) {
+    return
+  }
   var data = new Identicon((getHexCode(hash)), 420).toString();
   return `data:image/png;base64,${data}`
 }
