@@ -84,7 +84,7 @@ export const CreateMultiSigAccount: FC<CreateMultiSigAccountProps> = props => {
                   </FormControl>
                   <FormControl
                     label="Threshold"
-                    info="How many signatures is necessary to make a transaction?"
+                    info="How many signatures are needed to make a transaction?"
                   >
                     <input
                       type="number"
