@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.6.0",
     "@heroicons/react": "^1.0.6",
     "@hookform/error-message": "^2.0.0",
+    "@hookform/resolvers": "^2.9.7",
     "@json-rpc-tools/utils": "^1.7.6",
     "@mui/material": "^5.4.2",
     "@randlabs/myalgo-connect": "^1.1.3",
@@ -23,6 +24,7 @@
     "algorand-walletconnect-qrcode-modal": "^1.7.4",
     "algosdk": "^1.16.0",
     "axios": "^0.27.2",
+    "classnames": "^2.3.1",
     "daisyui": "^2.22.0",
     "dotenv": "^16.0.1",
     "identicon.js": "^2.3.3",
@@ -33,8 +35,10 @@
     "react-hook-form": "^7.34.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.0",
+    "react-toastify": "^9.0.8",
     "typescript": "^4.5.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "react-app-rewired start",

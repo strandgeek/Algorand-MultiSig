@@ -27,7 +27,7 @@ client.interceptors.response.use(response => {
  if (error.response.status === 401) {
   window.location.href = '/'
  }
- return error;
+ throw error
 });
 
 export const queryClient = new QueryClient()
