@@ -18,10 +18,6 @@ import (
 func SetupApi() (*gin.Engine, error) {
 	api := gin.Default()
 
-	// Global Middlewares
-	api.Use(middlewares.Cors)
-	// api.Use(middlewares.MeMiddleware())
-
 	// Database
 	db, err := gorm.Open(sqlite.Open("data/sqlite.db"), &gorm.Config{})
 	if err != nil {
@@ -36,6 +32,11 @@ func SetupApi() (*gin.Engine, error) {
 
 	// General Cache
 	c := cache.New(5*time.Minute, 10*time.Minute)
+
+	// Global Middlewares
+	m := middlewares.NewMiddlewares(db)
+	api.Use(m.Cors())
+	api.Use(m.Me())
 
 	ms := api.Group("ms-multisig")
 	{
