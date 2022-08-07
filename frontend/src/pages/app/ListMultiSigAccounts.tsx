@@ -18,7 +18,7 @@ export const ListMultiSigAccounts: FC<ListMultiSigAccountsProps> = () => {
       <div className="mx-auto max-w-4xl mt-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-semibold">MultiSig Accounts</h3>
-          <Link to="/app/create-multisig-account" className="btn btn-md btn-primary">Create</Link>
+          <Link to="/app/multisig-accounts/create" className="btn btn-md btn-primary">Create</Link>
         </div>
         <div className="overflow-x-auto w-full">
           <MultiSigAccountsTable multiSigAccounts={multiSigAccounts} />

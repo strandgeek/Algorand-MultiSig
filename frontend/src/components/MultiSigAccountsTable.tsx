@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import { useNavigate } from "react-router-dom";
 import { MultiSigAccount } from "../types/multisigAccount";
 import { getIdenticonSrc } from "../utils/getIdenticonSrc";
 import { getShortAddress } from "../utils/getShortAddress";
@@ -11,8 +12,9 @@ export interface MultiSigAccountsTableRowProps {
 export const MultiSigAccountsTableRow: FC<MultiSigAccountsTableRowProps> = ({
   multiSigAccount: { address, accounts },
 }) => {
+  const navigate = useNavigate()
   return (
-    <tr className="cursor-pointer" onClick={() => null}>
+    <tr className="cursor-pointer" onClick={() => navigate(`/app/multisig-accounts/${address}`)}>
       <td>
         <div className="flex items-center space-x-3">
           <div className="avatar">
