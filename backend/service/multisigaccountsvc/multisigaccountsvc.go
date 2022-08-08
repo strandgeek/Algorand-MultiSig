@@ -26,10 +26,7 @@ type CreateInput struct {
 	Addresses []string `json:"addresses"`
 }
 
-type ListFilter struct {
-	Limit  *int `json:"limit"`
-	Offset *int `json:"offset"`
-}
+type ListFilter struct {}
 
 func (s *MultiSigAccountService) Create(input CreateInput) (*model.MultiSigAccount, error) {
 	accounts, err := dbutil.GetOrCreateAccountByAddresses(s.db, input.Addresses)
@@ -73,10 +70,10 @@ func (s *MultiSigAccountService) List(filter *ListFilter, paginate *paginateutil
 	return msaccounts, err
 }
 
-func (s *MultiSigAccountService) GetByAddress(address string) (model.MultiSigAccount, error) {
+func (s *MultiSigAccountService) GetByAddress(address string) (*model.MultiSigAccount, error) {
 	var msaccount model.MultiSigAccount
 
 	err := s.db.Preload("Accounts").Where("address = ?", address).First(&msaccount).Error
 
-	return msaccount, err
+	return &msaccount, err
 }

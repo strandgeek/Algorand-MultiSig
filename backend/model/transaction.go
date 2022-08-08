@@ -7,5 +7,5 @@ type Transaction struct {
 	NumberOfSignsRequired int64           `json:"number_of_signs_required" gorm:"column:number_of_signs_required"`
 	Status                string          `json:"status" gorm:"status"`
 	MultiSigAccountId     int64           `json:"multisig_account_id" gorm:"multisig_account_id"`
-	MultiSigAccount       MultiSigAccount `json:"multisig_account"`
+	MultiSigAccount       MultiSigAccount `json:"-"`
 }

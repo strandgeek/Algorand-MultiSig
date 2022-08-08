@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"multisigdb-svc/model"
+	"multisigdb-svc/utils/paginateutil"
 
 	"github.com/algorand/go-algorand-sdk/crypto"
 	"github.com/algorand/go-algorand-sdk/encoding/msgpack"
@@ -19,6 +20,10 @@ func NewTransactionService(db *gorm.DB) *TransactionService {
 	return &TransactionService{
 		db: db,
 	}
+}
+
+type ListFilter struct {
+	MultiSigAccountId *int64
 }
 
 type CreateInput struct {
@@ -56,4 +61,24 @@ func (s *TransactionService) Create(input CreateInput) (*model.Transaction, erro
 	}
 
 	return &tx, nil
+}
+
+func applyListFilter(tx *gorm.DB, f *ListFilter) *gorm.DB {
+	if f == nil {
+		return tx
+	}
+	if f.MultiSigAccountId != nil {
+		tx = tx.Where("multi_sig_account_id = ?", f.MultiSigAccountId)
+	}
+	return tx
+}
+
+func (s *TransactionService) List(filter *ListFilter, paginate *paginateutil.Paginate) ([]model.Transaction, error) {
+	var transactions []model.Transaction
+
+	tx := paginateutil.ApplyGormPaginate(s.db, paginate)
+	tx = applyListFilter(tx, filter)
+	err := tx.Find(&transactions).Error
+
+	return transactions, err
 }

@@ -55,6 +55,7 @@ func SetupApi() (*gin.Engine, error) {
 			v1.POST("/multisig-accounts", msaCtrl.Create)
 			v1.GET("/multisig-accounts", msaCtrl.List)
 			v1.GET("/multisig-accounts/:msAddress", msaCtrl.Get)
+			v1.GET("/multisig-accounts/:msAddress/transactions", msaCtrl.GetTransactions)
 
 			// Transaction routes
 			txnCtrl := transactionctrl.NewTransactionController(svc)

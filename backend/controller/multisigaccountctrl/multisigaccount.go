@@ -1,9 +1,10 @@
 package multisigaccountctrl
 
 import (
-	"fmt"
+	"multisigdb-svc/model"
 	"multisigdb-svc/service"
 	"multisigdb-svc/service/multisigaccountsvc"
+	"multisigdb-svc/service/transactionsvc"
 	"multisigdb-svc/utils/apiutil"
 	"multisigdb-svc/utils/paginateutil"
 	"net/http"
@@ -39,9 +40,8 @@ func (ctrl MultiSigAccountController) Create(ctx *gin.Context) {
 }
 
 // List all MultiSig Account
-func (ctrl MultiSigAccountController) List(ctx *gin.Context) {
+func (ctrl *MultiSigAccountController) List(ctx *gin.Context) {
 	msa, err := ctrl.svc.MultiSigAccount.List(&multisigaccountsvc.ListFilter{}, paginateutil.NewPaginateFromApi(ctx))
-	fmt.Println(err)
 	if err != nil {
 		apiutil.Abort(ctx, http.StatusBadRequest)
 		return
@@ -49,18 +49,32 @@ func (ctrl MultiSigAccountController) List(ctx *gin.Context) {
 	ctx.JSON(200, msa)
 }
 
+func (ctrl *MultiSigAccountController) getMultiSigAccountByAddressParam(ctx *gin.Context) (*model.MultiSigAccount, error) {
+	address, _ := ctx.Params.Get("msAddress")
+	return ctrl.svc.MultiSigAccount.GetByAddress(address)
+}
+
 // Get a MultiSig Account by Address
-func (ctrl MultiSigAccountController) Get(ctx *gin.Context) {
-	address, exists := ctx.Params.Get("msAddress")
-	if !exists {
-		apiutil.Abort(ctx, http.StatusBadRequest)
-		return
-	}
-	msa, err := ctrl.svc.MultiSigAccount.GetByAddress(address)
-	fmt.Println(err)
+func (ctrl *MultiSigAccountController) Get(ctx *gin.Context) {
+	msa, err := ctrl.getMultiSigAccountByAddressParam(ctx)
 	if err != nil {
-		apiutil.Abort(ctx, http.StatusBadRequest)
+		apiutil.Abort(ctx, http.StatusNotFound)
 		return
 	}
 	ctx.JSON(200, msa)
+}
+
+// Get a MultiSig Account by Address
+func (ctrl *MultiSigAccountController) GetTransactions(ctx *gin.Context) {
+	msa, err := ctrl.getMultiSigAccountByAddressParam(ctx)
+	if err != nil {
+		apiutil.Abort(ctx, http.StatusNotFound)
+		return
+	}
+	filter := &transactionsvc.ListFilter{
+		MultiSigAccountId: &msa.Id,
+	}
+	paginate := paginateutil.NewPaginateFromApi(ctx)
+	txns, err := ctrl.svc.Transaction.List(filter, paginate)
+	ctx.JSON(200, txns)
 }
