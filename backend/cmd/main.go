@@ -2,10 +2,8 @@ package main
 
 import (
 	"multisigdb-svc/api"
-	"multisigdb-svc/service"
 	"multisigdb-svc/utils"
 
-	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
@@ -22,9 +20,9 @@ func main() {
 		return
 	}
 
-	broadCastTxnJob := cron.New()
-	broadCastTxnJob.AddFunc("@every 1m", service.BroadCastTheSignedTxn)
-	broadCastTxnJob.Start()
+	// broadCastTxnJob := cron.New()
+	// broadCastTxnJob.AddFunc("@every 1m", service.BroadCastTheSignedTxn)
+	// broadCastTxnJob.Start()
 
 	api, err := api.SetupApi()
 	if err != nil {

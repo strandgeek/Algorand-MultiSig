@@ -1,13 +1,16 @@
+// TODO: Adapt this file with the new service approach
+
 package service
 
 import (
 	"context"
 	"fmt"
-	"github.com/algorand/go-algorand-sdk/client/v2/algod"
-	"github.com/algorand/go-algorand-sdk/crypto"
-	"go.uber.org/zap"
 	"multisigdb-svc/db_utils"
 	"multisigdb-svc/utils"
+
+	"github.com/algorand/go-algorand-sdk/client/algod"
+	"github.com/algorand/go-algorand-sdk/crypto"
+	"go.uber.org/zap"
 )
 
 func MergeTransactions(txnId string) ([]byte, string, error) {

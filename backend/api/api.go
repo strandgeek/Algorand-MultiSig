@@ -1,9 +1,9 @@
 package api
 
 import (
-	"multisigdb-svc/controller"
 	"multisigdb-svc/controller/authctrl"
 	"multisigdb-svc/controller/multisigaccountctrl"
+	"multisigdb-svc/controller/transactionctrl"
 	"multisigdb-svc/middlewares"
 	"multisigdb-svc/model"
 	"multisigdb-svc/service"
@@ -56,14 +56,9 @@ func SetupApi() (*gin.Engine, error) {
 			v1.GET("/multisig-accounts", msaCtrl.List)
 			v1.GET("/multisig-accounts/:msAddress", msaCtrl.Get)
 
-			v1.POST("/transactions", controller.AddRawTxn)
-			v1.GET("/transactions/:txId", controller.GetRawTxn)
-
-			v1.GET("/transactions/:txId/signatures", controller.GetAllSignedTxn)
-			v1.POST("/transactions/:txId/signatures", controller.AddSingedTxn)
-
-			// TODO: Verify the real use-case for this route on frontend
-			v1.GET("/transaction-signatures/:signedTxId", controller.GetSignedTxn)
+			// Transaction routes
+			txnCtrl := transactionctrl.NewTransactionController(svc)
+			v1.POST("/transactions", txnCtrl.Create)
 		}
 	}
 
@@ -74,7 +69,7 @@ func Migrate(db *gorm.DB) error {
 	// TODO: Use a migrations tool like golang-migrate
 	return db.AutoMigrate(
 		&model.Account{},
-		&model.RawTxn{},
+		&model.Transaction{},
 		&model.SignedTxn{},
 		&model.MultiSigAccount{},
 	)

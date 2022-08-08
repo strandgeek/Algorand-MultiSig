@@ -68,7 +68,7 @@ func (s *MultiSigAccountService) List(filter *ListFilter, paginate *paginateutil
 	var msaccounts []model.MultiSigAccount
 
 	tx := paginateutil.ApplyGormPaginate(s.db, paginate)
-	err := tx.Preload("Accounts").Find(&msaccounts).Error
+	err := tx.Preload("Accounts").Preload("Transactions").Find(&msaccounts).Error
 
 	return msaccounts, err
 }
