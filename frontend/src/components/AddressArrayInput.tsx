@@ -18,21 +18,23 @@ export const AddressArrayInput: FC<AddressArrayInputProps> = props => {
       {fields.map((field, index) => {
         const isValid = !(formState?.errors?.addresses && formState?.errors?.addresses[index])
         return (
-          <SignerInput
-            key={field.id}
-            error={!isValid}
-            {...register(`addresses.${index}.value`)} 
-            leftComp={
-              <span className="text-gray-500 sm:text-sm">
-                <KeyIcon className="w-6 h-6" color={isValid ? '#999999' : '#c0392b'} />
-              </span>
-            }
-            rightComp={
-              <button type="button" className="btn btn-link" onClick={() => remove(index)}>
-                <XCircleIcon className="w-6 h-6" color="#999999" />
-              </button>
-            }
-          />
+          <div className="mt-2">
+              <SignerInput
+                key={field.id}
+                error={!isValid}
+                {...register(`addresses.${index}.value`)} 
+                leftComp={
+                  <span className="text-gray-500 sm:text-sm">
+                    <KeyIcon className="w-6 h-6" color={isValid ? '#999999' : '#c0392b'} />
+                  </span>
+                }
+                rightComp={
+                  <button type="button" className="btn btn-link" onClick={() => remove(index)}>
+                    <XCircleIcon className="w-6 h-6" color="#999999" />
+                  </button>
+                }
+              />
+          </div>
         )
       })}
       <button

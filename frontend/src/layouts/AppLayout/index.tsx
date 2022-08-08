@@ -7,7 +7,7 @@ export interface AppLayoutProps {
 
 export const AppLayout: FC<AppLayoutProps> = ({ children }) => {
   return (
-    <div className="bg-base-200 h-screen">
+    <div className="bg-base-200 h-screen overflow-scroll pb-8">
       <Navbar />
       {children}
     </div>

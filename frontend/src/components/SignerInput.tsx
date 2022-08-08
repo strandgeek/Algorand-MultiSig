@@ -15,7 +15,7 @@ export const SignerInput = forwardRef<HTMLInputElement, SignerInputProps>((props
     }
   )
   return (
-    <div className="mt-2 relative rounded-md shadow-sm">
+    <div className="relative rounded-md shadow-sm">
     {props.leftComp && (
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         {props.leftComp}
