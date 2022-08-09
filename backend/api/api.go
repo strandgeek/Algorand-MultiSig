@@ -60,6 +60,7 @@ func SetupApi() (*gin.Engine, error) {
 			// Transaction routes
 			txnCtrl := transactionctrl.NewTransactionController(svc)
 			v1.POST("/transactions", txnCtrl.Create)
+			v1.GET("/transactions/:txId", txnCtrl.GetByTxId)
 		}
 	}
 

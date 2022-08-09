@@ -82,3 +82,12 @@ func (s *TransactionService) List(filter *ListFilter, paginate *paginateutil.Pag
 
 	return transactions, err
 }
+
+func (s *TransactionService) GetTransactionByTxId(txId string) (*model.Transaction, error) {
+	transaction := model.Transaction{}
+	err := s.db.Where("txn_id = ?", txId).Find(&transaction).Error
+	if err != nil {
+		return nil, err
+	}
+	return &transaction, nil
+}

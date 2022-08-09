@@ -37,3 +37,16 @@ func (ctrl TransactionController) Create(ctx *gin.Context) {
 	}
 	ctx.JSON(200, msa)
 }
+
+// Get Transaction by TxID
+func (ctrl TransactionController) GetByTxId(ctx *gin.Context) {
+	txId, _ := ctx.Params.Get("txId")
+
+	transaction, err := ctrl.svc.Transaction.GetTransactionByTxId(txId)
+	if err != nil {
+		fmt.Println(err)
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+	ctx.JSON(200, transaction)
+}
