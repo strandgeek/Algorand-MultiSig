@@ -24,7 +24,7 @@ export const CreateTransaction: FC<CreateTransactionProps> = () => {
       multisig_account_address: multiSigAccount.address,
       raw_transaction_base_64: rawTxnBase64,
     })
-    navigate(`app/multisig-accounts/${multiSigAccount.address}/transactions/${res.txn_id}`);
+    navigate(`/app/multisig-accounts/${multiSigAccount.address}/transactions/${res.txn_id}`);
   }
   return (
     <AppLayout>

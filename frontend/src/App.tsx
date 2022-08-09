@@ -12,6 +12,7 @@ import { CreateMultiSigAccount } from "./pages/app/CreateMultiSigAccount";
 import { Index } from "./pages/Index";
 import { ViewMultiSigAccount } from "./pages/app/ViewMultiSigAccount";
 import { CreateTransaction } from "./pages/app/CreateTransaction";
+import ViewTransaction from "./pages/app/ViewTransaction";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/app/multisig-accounts/create" element={<CreateMultiSigAccount />} />
             <Route path="/app/multisig-accounts/:msaAddress" element={<ViewMultiSigAccount />} />
             <Route path="/app/multisig-accounts/:msaAddress/transactions/create" element={<CreateTransaction />} />
+            <Route path="/app/multisig-accounts/:msaAddress/transactions/:txId" element={<ViewTransaction />} />
             <Route
               path="*"
               element={<Navigate to="/app/multisig-accounts" replace />}
