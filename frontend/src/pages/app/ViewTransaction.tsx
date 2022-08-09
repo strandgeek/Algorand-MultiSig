@@ -1,4 +1,8 @@
 import { KeyIcon } from "@heroicons/react/outline";
+import algosdk, { Transaction } from "algosdk";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useTransactionQuery } from "../../client/queries";
 import { AddressInfoLabel } from "../../components/AddressInfoLabel";
 import { AlgoAmountLabel } from "../../components/AlgoAmountLabel";
 import { InfoList, InfoListItem } from "../../components/InfoList";
@@ -6,35 +10,47 @@ import { SignaturesList } from "../../components/SignaturesList";
 import { StatusLabel } from "../../components/StatusLabel";
 import { AppLayout } from "../../layouts/AppLayout";
 import { SignedTransaction } from "../../types/signedTransaction";
+import { getEncodedAddress } from "../../utils/getEncodedAddress";
 
 interface ViewTransactionProps {}
 
 const ViewTransaction: React.FC<ViewTransactionProps> = () => {
+  const params = useParams()
+  const { data: txData } = useTransactionQuery(params.txId)
+  const [transaction, setTransaction] = useState<Transaction>()
+  useEffect(() => {
+    if (txData) {
+      const transaction = algosdk.decodeUnsignedTransaction(Buffer.from(txData.raw_transaction, "base64"))
+      console.log(transaction)
+      setTransaction(transaction)
+    }
+  }, [txData])
+
   const txOverviewItems: InfoListItem[] = [
     {
       label: "TxID",
-      value: "1234",
+      value: params.txId,
     },
     {
       label: "Status",
-      value: <StatusLabel status="BROADCASTED" />,
+      value: <StatusLabel status="PENDING" />,
     },
     {
       label: "Sender",
       value: (
-        <AddressInfoLabel address="UXVPARFR5J7BI5RXVZPCO5OE4OWNXEOZ6ZCDO5VFSBNH2IVZAQVQ" />
+        <AddressInfoLabel address={getEncodedAddress(transaction?.from.publicKey)} />
       ),
     },
     {
       label: "Receiver",
       value: (
-        <AddressInfoLabel address="UXVPARFR5J7BI5RXVZPCO5OE4OWNXEOZ6ZCDO5VFSBNH2IVZAQVQ" />
+        <AddressInfoLabel address={getEncodedAddress(transaction?.to.publicKey)} />
       ),
     },
     {
       label: "Amount",
       value: (
-        <AlgoAmountLabel value={5000000} />
+        <AlgoAmountLabel value={transaction?.amount || 0} />
       ),
     },
   ];
@@ -48,6 +64,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
       transaction: {
         id: 1,
         txn_id: '1234',
+        raw_transaction: '',
       },
     },
     {
@@ -59,6 +76,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
       transaction: {
         id: 1,
         txn_id: '1234',
+        raw_transaction: '',
       },
     }
   ]

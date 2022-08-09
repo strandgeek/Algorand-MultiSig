@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Transaction } from "../types/transaction";
 import { getShortAddress } from "../utils/getShortAddress";
 
@@ -10,6 +10,7 @@ export interface TransactionsTableRowProps {
 export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
   transaction,
 }) => {
+  const params = useParams()
   const navigate = useNavigate();
   const {
     txn_id,
@@ -17,7 +18,7 @@ export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
   return (
     <tr
       className="cursor-pointer"
-      onClick={() => navigate("/app/multisig-accounts/test/txns/test")}
+      onClick={() => navigate(`/app/multisig-accounts/${params.msaAddress}/transactions/${txn_id}`)}
     >
       <td>
         <div className="flex items-center space-x-3">

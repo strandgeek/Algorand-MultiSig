@@ -14,7 +14,7 @@ export const useMultiSigAccountsQuery = () => useQuery<MultiSigAccount[]>(['mult
   return data
 })
 
-export const useMultiSigAccountQuery = (address?: string) => useQuery<MultiSigAccount>(['multisig-accounts', address], async () => {
+export const useMultiSigAccountQuery = (address?: string) => useQuery<MultiSigAccount>(['multisig-account', address], async () => {
   const { data } = await client.get(`/multisig-accounts/${address}`)
   return data
 }, {
@@ -28,5 +28,15 @@ export const useMultiSigAccountTransactionsQuery = (
   return data
 }, {
   enabled: !!msAddress,
+})
+
+export const useTransactionQuery = (
+  txId?: string
+) => useQuery<Transaction>(['transaction', txId], async () => {
+  const { data } = await client.get(`/transactions/${txId}`)
+  return data
+}, {
+  enabled: !!txId,
+  refetchInterval: 1000,
 })
 

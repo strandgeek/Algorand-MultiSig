@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 
 export interface AlgoAmountLabelProps {
-  value: number;
+  value: number | bigint;
 }
 
 const formatter = new Intl.NumberFormat("en-US", {
@@ -11,7 +11,8 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 export const AlgoAmountLabel: FC<AlgoAmountLabelProps> = ({ value }) => {
-  const algo = value * 10**-6
+
+  const algo = Number(value) * 10**-6
   return (
     <div className="flex items-center">
       <div className="mr-2">
