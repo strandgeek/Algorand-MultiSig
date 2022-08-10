@@ -7,12 +7,6 @@ const TESTNET_GENESIS_HASH = 'SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI=';
 
 type AuthFn = () => void
 
-declare global {
-  interface Window {
-    AlgoSigner: any;
-  }
-}
-
 export const useAuth =  (): AuthFn => {
   const navigate = useNavigate()
   const auth = async () => {

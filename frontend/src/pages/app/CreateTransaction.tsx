@@ -1,14 +1,12 @@
 import { FC, useState } from "react";
 import { AppLayout } from "../../layouts/AppLayout";
-import { useMeQuery, useMultiSigAccountQuery } from "../../client/queries";
+import { useMultiSigAccountQuery } from "../../client/queries";
 import { TransactionType, TransactionTypeOptions } from "../../components/TransactionTypeOptions";
 import { CreateTransferTransactionForm } from "../../components/CreateTransferTransactionForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { useCreateTransactionMutation } from "../../client/mutations";
 
 export interface CreateTransactionProps {}
-
-
 
 export const CreateTransaction: FC<CreateTransactionProps> = () => {
   const params = useParams()

@@ -2,12 +2,13 @@ import { KeyIcon } from "@heroicons/react/outline";
 import algosdk, { Transaction } from "algosdk";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useTransactionQuery } from "../../client/queries";
+import { useMultiSigAccountQuery, useTransactionQuery } from "../../client/queries";
 import { AddressInfoLabel } from "../../components/AddressInfoLabel";
 import { AlgoAmountLabel } from "../../components/AlgoAmountLabel";
 import { InfoList, InfoListItem } from "../../components/InfoList";
 import { SignaturesList } from "../../components/SignaturesList";
 import { StatusLabel } from "../../components/StatusLabel";
+import { useSignTransaction } from "../../hooks/useSignTransaction";
 import { AppLayout } from "../../layouts/AppLayout";
 import { SignedTransaction } from "../../types/signedTransaction";
 import { getEncodedAddress } from "../../utils/getEncodedAddress";
@@ -17,7 +18,12 @@ interface ViewTransactionProps {}
 const ViewTransaction: React.FC<ViewTransactionProps> = () => {
   const params = useParams()
   const { data: txData } = useTransactionQuery(params.txId)
+  const { data: multiSigAccount } = useMultiSigAccountQuery(params.msaAddress)
   const [transaction, setTransaction] = useState<Transaction>()
+  const signTransaction = useSignTransaction({
+    multiSigAccount,
+    transaction: txData,
+  })
   useEffect(() => {
     if (txData) {
       const transaction = algosdk.decodeUnsignedTransaction(Buffer.from(txData.raw_transaction, "base64"))
@@ -102,7 +108,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
           <SignaturesList  signedTransactions={signedTransactions} />
         </div>
 
-        <button className="btn btn-lg btn-primary mt-4 btn-block">
+        <button className="btn btn-lg btn-primary mt-4 btn-block" onClick={() => signTransaction()}>
           <KeyIcon className="h-6 w-6 mr-1" />
           Sign Transaction
         </button>
