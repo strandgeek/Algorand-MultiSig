@@ -26,7 +26,7 @@ type CreateInput struct {
 	Addresses []string `json:"addresses"`
 }
 
-type ListFilter struct {}
+type ListFilter struct{}
 
 func (s *MultiSigAccountService) Create(input CreateInput) (*model.MultiSigAccount, error) {
 	accounts, err := dbutil.GetOrCreateAccountByAddresses(s.db, input.Addresses)
@@ -40,7 +40,8 @@ func (s *MultiSigAccountService) Create(input CreateInput) (*model.MultiSigAccou
 		Accounts:  accounts,
 	}
 
-	algoMsa, err := crypto.MultisigAccountWithParams(msa.Version, msa.Threshold, algoutil.AccountsToAlgoAddresses(accounts))
+	addresses := algoutil.AccountsToAlgoAddresses(accounts)
+	algoMsa, err := crypto.MultisigAccountWithParams(msa.Version, msa.Threshold, addresses)
 
 	if err != nil {
 		return nil, err

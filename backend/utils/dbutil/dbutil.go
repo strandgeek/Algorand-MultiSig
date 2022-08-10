@@ -24,3 +24,12 @@ func GetOrCreateAccountByAddresses(db *gorm.DB, addresses []string) ([]*model.Ac
 	}
 	return accounts, nil
 }
+
+func GetSignerIndex(accounts []*model.Account, addr string) int {
+	for idx, acc := range accounts {
+		if addr == acc.Address {
+			return idx
+		}
+	}
+	return -1
+}

@@ -3,6 +3,7 @@ package api
 import (
 	"multisigdb-svc/controller/authctrl"
 	"multisigdb-svc/controller/multisigaccountctrl"
+	"multisigdb-svc/controller/signedtransactionctrl"
 	"multisigdb-svc/controller/transactionctrl"
 	"multisigdb-svc/middlewares"
 	"multisigdb-svc/model"
@@ -61,6 +62,10 @@ func SetupApi() (*gin.Engine, error) {
 			txnCtrl := transactionctrl.NewTransactionController(svc)
 			v1.POST("/transactions", txnCtrl.Create)
 			v1.GET("/transactions/:txId", txnCtrl.GetByTxId)
+
+			// Signed Transaction routes
+			signedTxnCtrl := signedtransactionctrl.NewSignedTransactionController(svc)
+			v1.POST("/signed-transactions", signedTxnCtrl.Create)
 		}
 	}
 
@@ -72,7 +77,7 @@ func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&model.Account{},
 		&model.Transaction{},
-		&model.SignedTxn{},
+		&model.SignedTransaction{},
 		&model.MultiSigAccount{},
 	)
 }
