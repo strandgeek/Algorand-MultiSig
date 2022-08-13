@@ -6,27 +6,16 @@ import (
 	"multisigdb-svc/controller/signedtransactionctrl"
 	"multisigdb-svc/controller/transactionctrl"
 	"multisigdb-svc/middlewares"
-	"multisigdb-svc/model"
 	"multisigdb-svc/service"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func SetupApi() (*gin.Engine, error) {
+func SetupApi(db *gorm.DB) (*gin.Engine, error) {
 	api := gin.Default()
-
-	// Database
-	db, err := gorm.Open(sqlite.Open("data/sqlite.db"), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-	if err := Migrate(db); err != nil {
-		return nil, err
-	}
 
 	// Service
 	svc := service.NewService(db)
@@ -70,14 +59,4 @@ func SetupApi() (*gin.Engine, error) {
 	}
 
 	return api, nil
-}
-
-func Migrate(db *gorm.DB) error {
-	// TODO: Use a migrations tool like golang-migrate
-	return db.AutoMigrate(
-		&model.Account{},
-		&model.Transaction{},
-		&model.SignedTransaction{},
-		&model.MultiSigAccount{},
-	)
 }

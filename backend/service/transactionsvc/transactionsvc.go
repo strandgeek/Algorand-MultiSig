@@ -54,6 +54,7 @@ func (s *TransactionService) Create(input CreateInput) (*model.Transaction, erro
 		RawTransaction:    input.RawTransactionBase64,
 		TxnId:             txId,
 		MultiSigAccountId: msa.Id,
+		Status:            "PENDING",
 	}
 
 	if err := s.db.Create(&tx).Error; err != nil {

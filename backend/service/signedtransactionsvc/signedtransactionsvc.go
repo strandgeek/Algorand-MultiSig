@@ -102,5 +102,13 @@ func (s *SignedTransactionService) Create(input CreateInput) (*model.SignedTrans
 		return nil, err
 	}
 
+	txn.SignedTransactionsCount++
+
+	if txn.SignedTransactionsCount >= txn.MultiSigAccount.Threshold {
+		txn.Status = "READY"
+	}
+
+	s.db.Save(&txn)
+
 	return &stx, nil
 }
