@@ -11,10 +11,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func SetupApi(db *gorm.DB) (*gin.Engine, error) {
+func SetupApi(db *gorm.DB, logger *zap.Logger) (*gin.Engine, error) {
 	api := gin.Default()
 
 	// Service

@@ -5,6 +5,7 @@ import (
 	"multisigdb-svc/model"
 	"multisigdb-svc/service/broadcastsvc"
 	"multisigdb-svc/utils"
+	"multisigdb-svc/utils/loggerutil"
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -16,7 +17,10 @@ import (
 func main() {
 	utils.LoadViperConfig()
 	var err error
-	logger := utils.GetLoggerInstance()
+	logger, err := loggerutil.NewLogger()
+	if err != nil {
+		panic(err)
+	}
 
 	logger.Info("Multi-sig go service starting ...")
 
@@ -36,12 +40,12 @@ func main() {
 		return
 	}
 
-	broadcastService := broadcastsvc.NewBroadcastService(db)
+	broadcastService := broadcastsvc.NewBroadcastService(db, logger)
 	broadCastTxnJob := cron.New()
-	broadCastTxnJob.AddFunc("@every 1m", broadcastService.BroadcastAllSignedTxn)
+	broadCastTxnJob.AddFunc("@every 30s", broadcastService.BroadcastAllSignedTxn)
 	broadCastTxnJob.Start()
 
-	api, err := api.SetupApi(db)
+	api, err := api.SetupApi(db, logger)
 	if err != nil {
 		logger.Error("Error while starting the API", zap.Error(err))
 	}
