@@ -1,11 +1,14 @@
 import React, { FC } from "react";
 import { getIdenticonSrc } from "../utils/getIdenticonSrc";
+import { getShortAddress } from "../utils/getShortAddress";
 
 export interface AddressInfoLabelProps {
   address: string;
+  short?: boolean
 }
 
-export const AddressInfoLabel: FC<AddressInfoLabelProps> = ({ address }) => {
+export const AddressInfoLabel: FC<AddressInfoLabelProps> = ({ address, short }) => {
+  const addrLabel = short ? getShortAddress(address): address
   return (
     <div className="flex items-center">
       <div className="avatar">
@@ -18,7 +21,7 @@ export const AddressInfoLabel: FC<AddressInfoLabelProps> = ({ address }) => {
           />
         </div>
       </div>
-      <div>{address}</div>
+      <div>{addrLabel}</div>
     </div>
   );
 };
