@@ -6,7 +6,9 @@ import (
 	"multisigdb-svc/service/broadcastsvc"
 	"multisigdb-svc/utils"
 	"multisigdb-svc/utils/loggerutil"
+	"time"
 
+	gocache "github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -29,6 +31,9 @@ func main() {
 		return
 	}
 
+	// General Cache
+	cache := gocache.New(5*time.Minute, 10*time.Minute)
+
 	// Database
 	db, err := gorm.Open(sqlite.Open("data/sqlite.db"), &gorm.Config{})
 	if err != nil {
@@ -45,7 +50,7 @@ func main() {
 	broadCastTxnJob.AddFunc("@every 30s", broadcastService.BroadcastAllSignedTxn)
 	broadCastTxnJob.Start()
 
-	api, err := api.SetupApi(db, logger)
+	api, err := api.SetupApi(db, logger, cache)
 	if err != nil {
 		logger.Error("Error while starting the API", zap.Error(err))
 	}

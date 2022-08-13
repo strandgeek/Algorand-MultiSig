@@ -3,7 +3,7 @@ package middlewares
 import (
 	"errors"
 	"multisigdb-svc/model"
-	"multisigdb-svc/utils"
+	"multisigdb-svc/utils/jwtutil"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +15,7 @@ func (m *Middlewares) Me() gin.HandlerFunc {
 		parts := strings.Split(authorization, " ")
 		if len(parts) == 2 {
 			token := parts[1]
-			address, err := utils.ParseAccountJWT(token)
+			address, err := jwtutil.ParseAccountJWT(token)
 			if err != nil {
 				c.Next()
 				return

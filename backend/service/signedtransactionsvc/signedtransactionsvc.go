@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"multisigdb-svc/model"
-	"multisigdb-svc/utils"
 	"multisigdb-svc/utils/algoutil"
 	"multisigdb-svc/utils/dbutil"
 
@@ -89,7 +88,7 @@ func (s *SignedTransactionService) Create(input CreateInput) (*model.SignedTrans
 		return nil, ErrSignerIsNotValid
 	}
 
-	pubkey, _ := utils.GetPubKey(signer.Address)
+	pubkey, _ := algoutil.GetPubKey(signer.Address)
 	decodedTxn := decodedSignedTxn.Txn
 	subsigSignature := decodedSignedTxn.Msig.Subsigs[signerIndex].Sig[:]
 	isSignatureValid := algoutil.VerifySignedTransaction(pubkey, decodedTxn, subsigSignature)

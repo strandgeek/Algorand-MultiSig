@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"multisigdb-svc/service"
 	"multisigdb-svc/service/signedtransactionsvc"
-	"multisigdb-svc/utils"
 	"multisigdb-svc/utils/apiutil"
 	"net/http"
 
@@ -29,7 +28,7 @@ func (ctrl SignedTransactionController) Create(ctx *gin.Context) {
 		apiutil.Abort(ctx, http.StatusBadRequest)
 		return
 	}
-	me, err := utils.GetMe(ctx)
+	me, err := apiutil.GetMe(ctx)
 	if err != nil {
 		apiutil.Abort(ctx, http.StatusUnauthorized)
 	}

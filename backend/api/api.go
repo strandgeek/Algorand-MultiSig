@@ -7,7 +7,6 @@ import (
 	"multisigdb-svc/controller/transactionctrl"
 	"multisigdb-svc/middlewares"
 	"multisigdb-svc/service"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
@@ -15,14 +14,11 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupApi(db *gorm.DB, logger *zap.Logger) (*gin.Engine, error) {
+func SetupApi(db *gorm.DB, logger *zap.Logger, cache *cache.Cache) (*gin.Engine, error) {
 	api := gin.Default()
 
 	// Service
-	svc := service.NewService(db)
-
-	// General Cache
-	c := cache.New(5*time.Minute, 10*time.Minute)
+	svc := service.NewService(db, cache)
 
 	// Global Middlewares
 	m := middlewares.NewMiddlewares(db)
@@ -34,9 +30,7 @@ func SetupApi(db *gorm.DB, logger *zap.Logger) (*gin.Engine, error) {
 		v1 := ms.Group("v1")
 		{
 			// Auth routes
-			authCtrl := authctrl.AuthController{
-				Cache: c,
-			}
+			authCtrl := authctrl.NewAuthController(svc)
 			v1.POST("/auth/nonce", authCtrl.GenerateNonce)
 			v1.POST("/auth/complete", authCtrl.Auth)
 			v1.GET("/auth/me", authCtrl.Me)
