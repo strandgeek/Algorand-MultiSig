@@ -38,8 +38,12 @@ func (ctrl SignedTransactionController) Create(ctx *gin.Context) {
 
 	msa, err := ctrl.svc.SignedTransaction.Create(input)
 	if err != nil {
+		status := http.StatusBadRequest
+		if err == signedtransactionsvc.ErrAlreadyExists {
+			status = http.StatusConflict
+		}
 		fmt.Println(err)
-		apiutil.Abort(ctx, http.StatusBadRequest)
+		apiutil.Abort(ctx, status)
 		return
 	}
 	ctx.JSON(200, msa)

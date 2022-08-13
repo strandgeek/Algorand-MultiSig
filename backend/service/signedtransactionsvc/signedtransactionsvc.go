@@ -14,6 +14,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// Errors
+var ErrCouldNotGetTransaction = errors.New("could not get transaction")
+var ErrCouldNotCheckExistingSignature = errors.New("could not check existing signature")
+var ErrAlreadyExists = errors.New("transaction signature already exists for the signer")
+var ErrTransactionMismatch = errors.New("signed txn is not equal selected txn")
+var ErrCouldNotGetSigner = errors.New("could not get signer")
+var ErrSignerIsNotValid = errors.New("signer is not valid for this multisig account")
+var ErrInvalidSignature = errors.New("could not validate signature for signer")
+
 type SignedTransactionService struct {
 	db *gorm.DB
 }
@@ -25,7 +34,7 @@ func NewSignedTransactionService(db *gorm.DB) *SignedTransactionService {
 }
 
 type ListFilter struct {
-	MultiSigAccountId *int64
+	TransactionId *int64
 }
 
 type CreateInput struct {
@@ -48,16 +57,25 @@ func (s *SignedTransactionService) Create(input CreateInput) (*model.SignedTrans
 
 	var txn model.Transaction
 	if err := s.db.Where("txn_id = ?", input.TransactionTxnId).Preload("MultiSigAccount.Accounts").First(&txn).Error; err != nil {
-		return nil, errors.New("could not get transaction")
+		return nil, ErrCouldNotGetTransaction
+	}
+
+	var existingCount int64
+	if err := s.db.Model(&model.SignedTransaction{}).Where("signer_id = ?", input.SignerId).Where("transaction_id = ?", txn.Id).Count(&existingCount).Error; err != nil {
+		return nil, ErrCouldNotCheckExistingSignature
+	}
+
+	if existingCount > 0 {
+		return nil, ErrAlreadyExists
 	}
 
 	if txn.TxnId != crypto.GetTxID(decodedSignedTxn.Txn) {
-		return nil, errors.New("signed txn is not equal selected txn")
+		return nil, ErrTransactionMismatch
 	}
 
 	var signer model.Account
 	if err := s.db.Where("id = ?", input.SignerId).First(&signer).Error; err != nil {
-		return nil, errors.New("could not get signer")
+		return nil, ErrCouldNotGetSigner
 	}
 
 	stx := model.SignedTransaction{
@@ -68,7 +86,7 @@ func (s *SignedTransactionService) Create(input CreateInput) (*model.SignedTrans
 
 	signerIndex := dbutil.GetSignerIndex(txn.MultiSigAccount.Accounts, signer.Address)
 	if signerIndex == -1 {
-		return nil, errors.New("signer is not valid for this multisig account")
+		return nil, ErrSignerIsNotValid
 	}
 
 	pubkey, _ := utils.GetPubKey(signer.Address)
@@ -77,7 +95,7 @@ func (s *SignedTransactionService) Create(input CreateInput) (*model.SignedTrans
 	isSignatureValid := algoutil.VerifySignedTransaction(pubkey, decodedTxn, subsigSignature)
 
 	if !isSignatureValid {
-		return nil, errors.New("could not validate signature for signer")
+		return nil, ErrInvalidSignature
 	}
 
 	if err := s.db.Create(&stx).Error; err != nil {

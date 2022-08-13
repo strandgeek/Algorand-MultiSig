@@ -2,6 +2,7 @@ package transactionctrl
 
 import (
 	"fmt"
+	"multisigdb-svc/model"
 	"multisigdb-svc/service"
 	"multisigdb-svc/service/transactionsvc"
 	"multisigdb-svc/utils/apiutil"
@@ -38,11 +39,14 @@ func (ctrl TransactionController) Create(ctx *gin.Context) {
 	ctx.JSON(200, msa)
 }
 
+func (ctrl *TransactionController) getTransactionByTxIdParam(ctx *gin.Context) (*model.Transaction, error) {
+	txId, _ := ctx.Params.Get("txId")
+	return ctrl.svc.Transaction.GetTransactionByTxId(txId)
+}
+
 // Get Transaction by TxID
 func (ctrl TransactionController) GetByTxId(ctx *gin.Context) {
-	txId, _ := ctx.Params.Get("txId")
-
-	transaction, err := ctrl.svc.Transaction.GetTransactionByTxId(txId)
+	transaction, err := ctrl.getTransactionByTxIdParam(ctx)
 	if err != nil {
 		fmt.Println(err)
 		apiutil.Abort(ctx, http.StatusBadRequest)

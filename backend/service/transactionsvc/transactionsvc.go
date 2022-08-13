@@ -85,7 +85,7 @@ func (s *TransactionService) List(filter *ListFilter, paginate *paginateutil.Pag
 
 func (s *TransactionService) GetTransactionByTxId(txId string) (*model.Transaction, error) {
 	transaction := model.Transaction{}
-	err := s.db.Where("txn_id = ?", txId).Find(&transaction).Error
+	err := s.db.Where("txn_id = ?", txId).Preload("SignedTransactions.Signer").Find(&transaction).Error
 	if err != nil {
 		return nil, err
 	}
