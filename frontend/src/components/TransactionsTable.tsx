@@ -1,14 +1,18 @@
 import React, { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { MultiSigAccount } from "../types/multisigAccount";
 import { Transaction } from "../types/transaction";
 import { getShortAddress } from "../utils/getShortAddress";
+import { StatusLabel } from "./StatusLabel";
 
 export interface TransactionsTableRowProps {
   transaction: Transaction
+  multiSigAccount: MultiSigAccount
 }
 
 export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
   transaction,
+  multiSigAccount,
 }) => {
   const params = useParams()
   const navigate = useNavigate();
@@ -29,23 +33,11 @@ export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
           </div>
         </div>
       </td>
-      <td className="text-center">0 of 3</td>
+      <td className="text-center">{transaction.signed_transactions_count} of {multiSigAccount.threshold}</td>
       <td className="text-center">
-        <div className="flex justify-center items-center space-x-3 lg:pl-2">
-          <div
-            className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-yellow-500"
-            aria-hidden="true"
-          />
-          <a href="#" className="truncate hover:text-gray-600">
-            <span>
-              <span className="text-gray-500 font-normal">
-                Waiting Signatures
-              </span>
-            </span>
-          </a>
-        </div>
+        <StatusLabel status={transaction.status} />
       </td>
-      <td className="text-right">
+      <td className="text-center">
         <span className="font-normal opacity-70 text-sm">20h ago</span>
       </td>
     </tr>
@@ -54,21 +46,22 @@ export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
 
 export interface TransactionsTableProps {
   transactions: Transaction[]
+  multiSigAccount: MultiSigAccount
 }
 
-export const TransactionsTable: FC<TransactionsTableProps> = ({ transactions }) => {
+export const TransactionsTable: FC<TransactionsTableProps> = ({ transactions, multiSigAccount }) => {
   return (
     <table className="table w-full">
       <thead>
         <tr>
           <th>TxID</th>
           <th className="text-center">Signatures</th>
-          <th className="text-center">Status</th>
-          <th className="text-right">Last Update</th>
+          <th className="text-left">Status</th>
+          <th className="text-center">Last Update</th>
         </tr>
       </thead>
       <tbody>
-        {transactions.map(t => <TransactionsTableRow key={t.id} transaction={t} />)}
+        {transactions.map(t => <TransactionsTableRow key={t.id} transaction={t} multiSigAccount={multiSigAccount} />)}
       </tbody>
     </table>
   );

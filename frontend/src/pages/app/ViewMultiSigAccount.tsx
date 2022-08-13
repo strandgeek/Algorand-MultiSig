@@ -5,8 +5,6 @@ import { MultiSigAccountDetails } from '../../components/MultiSigAccountDetails'
 import { MultiSigAccountSignersList } from '../../components/MultiSigAccountSignersList'
 import { TransactionsTable } from '../../components/TransactionsTable'
 import { AppLayout } from '../../layouts/AppLayout'
-import { getIdenticonSrc } from '../../utils/getIdenticonSrc'
-import { getShortAddress } from '../../utils/getShortAddress'
 
 export interface ViewMultiSigAccountProps {
   
@@ -56,7 +54,7 @@ export const ViewMultiSigAccount: FC<ViewMultiSigAccountProps> = (props) => {
 
         <div className="overflow-x-auto w-full">
           {transactions && (
-            <TransactionsTable transactions={transactions} />
+            <TransactionsTable transactions={transactions} multiSigAccount={multiSigAccount} />
           )}
         </div>
       </div>

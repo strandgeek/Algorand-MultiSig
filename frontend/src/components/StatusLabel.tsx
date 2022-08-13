@@ -1,16 +1,17 @@
 import classNames from "classnames";
 import React, { FC } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
+import { Transaction } from "../types/transaction";
 
 export interface StatusLabelProps {
-  status: "PENDING" | "READY" | "BROADCASTING" | "BROADCASTED" | "FAILED";
+  status: Transaction['status'];
 }
 
 const STATUS_LABELS: {
   [key: string]: string;
 } = {
   PENDING: "Pending Signatures",
-  READY: "Ready to Broadcast",
+  READY: "Ready",
   FAILED: "Failed",
   BROADCASTING: "Broadcasting...",
   BROADCASTED: "Broadcasted",
@@ -32,7 +33,7 @@ export const StatusLabel: FC<StatusLabelProps> = ({ status }) => {
     STATUS_COLOR_CLASSNAME[status]
   );
   return (
-    <div className="flex justify-center items-center space-x-2">
+    <div className="flex items-center space-x-2">
       {status === "BROADCASTING" ? (
         <ClipLoader size={14} className="ml-2" color="#999999" />
       ) : (

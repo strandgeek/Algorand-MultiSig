@@ -1,4 +1,4 @@
-import { CheckCircleIcon, KeyIcon } from "@heroicons/react/outline";
+import { CheckCircleIcon, ExternalLinkIcon, KeyIcon } from "@heroicons/react/outline";
 import algosdk, { Transaction } from "algosdk";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { SignaturesList } from "../../components/SignaturesList";
 import { StatusLabel } from "../../components/StatusLabel";
 import { useSignTransaction } from "../../hooks/useSignTransaction";
 import { AppLayout } from "../../layouts/AppLayout";
+import { getTransactionUrl } from "../../utils/explorer";
 import { getEncodedAddress } from "../../utils/getEncodedAddress";
 
 interface ViewTransactionProps {}
@@ -47,11 +48,22 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
   const txOverviewItems: InfoListItem[] = [
     {
       label: "TxID",
-      value: params.txId,
+      value: (
+        <>
+          {txData?.status === 'BROADCASTED' ? (
+            <a className="text-primary flex items-center" href={getTransactionUrl(txData.txn_id)} target="_blank" rel="noreferrer">
+              {params.txId}
+              <ExternalLinkIcon className="h-4 w-4 ml-2" />
+            </a>
+          ): (
+            <span>{params.txId}</span>
+          )}
+        </>
+      ),
     },
     {
       label: "Status",
-      value: <StatusLabel status="PENDING" />,
+      value: <StatusLabel status={txData!.status} />,
     },
     {
       label: "Sender",
