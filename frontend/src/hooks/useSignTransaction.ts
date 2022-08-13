@@ -1,9 +1,10 @@
 import { toast } from "react-toastify";
+import { useCreateSignedTransactionMutation } from "../client/mutations";
 import { useMeQuery } from "../client/queries";
 import { MultiSigAccount } from "../types/multisigAccount";
 import { Transaction } from "../types/transaction";
 
-type SignTransactionFn = () => void
+type SignTransactionFn = () => Promise<any>
 
 interface UseSignTransactionOptions {
   multiSigAccount?: MultiSigAccount
@@ -14,6 +15,7 @@ export const useSignTransaction = ({
     multiSigAccount,
     transaction,
   }: UseSignTransactionOptions): SignTransactionFn => {
+    const { mutateAsync } = useCreateSignedTransactionMutation()
     const { data: me } = useMeQuery()
     const sign = async () => {
       if (!me || !multiSigAccount || !transaction) {
@@ -37,11 +39,10 @@ export const useSignTransaction = ({
   
       const txID = signedTxs[0].txID;
       const signedTxn = signedTxs[0].blob;
-      console.log({
-        txID,
-        signedTxn,
+      return mutateAsync({
+        transaction_txn_id: txID,
+        raw_signed_transaction_base_64: signedTxn,
       })
-      return null
     }
     return sign
 }

@@ -13,7 +13,7 @@ export const SignaturesList: FC<SignaturesListProps> = ({
   return (
     <div>
       {signedTransactions.map(signedTransaction => {
-        const address = signedTransaction.account.address
+        const address = signedTransaction.signer.address
         return (
           <div
             key={signedTransaction.id}

@@ -1,8 +1,14 @@
-import { KeyIcon } from "@heroicons/react/outline";
+import { CheckCircleIcon, KeyIcon } from "@heroicons/react/outline";
 import algosdk, { Transaction } from "algosdk";
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useMultiSigAccountQuery, useTransactionQuery } from "../../client/queries";
+import { Link, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  useMeQuery,
+  useMultiSigAccountQuery,
+  useTransactionQuery,
+} from "../../client/queries";
 import { AddressInfoLabel } from "../../components/AddressInfoLabel";
 import { AlgoAmountLabel } from "../../components/AlgoAmountLabel";
 import { InfoList, InfoListItem } from "../../components/InfoList";
@@ -10,27 +16,33 @@ import { SignaturesList } from "../../components/SignaturesList";
 import { StatusLabel } from "../../components/StatusLabel";
 import { useSignTransaction } from "../../hooks/useSignTransaction";
 import { AppLayout } from "../../layouts/AppLayout";
-import { SignedTransaction } from "../../types/signedTransaction";
 import { getEncodedAddress } from "../../utils/getEncodedAddress";
 
 interface ViewTransactionProps {}
 
 const ViewTransaction: React.FC<ViewTransactionProps> = () => {
-  const params = useParams()
-  const { data: txData } = useTransactionQuery(params.txId)
-  const { data: multiSigAccount } = useMultiSigAccountQuery(params.msaAddress)
-  const [transaction, setTransaction] = useState<Transaction>()
+  const params = useParams();
+  const { data: me } = useMeQuery()
+  const { data: txData, refetch, isLoading } = useTransactionQuery(params.txId);
+  const { data: multiSigAccount } = useMultiSigAccountQuery(params.msaAddress);
+  const [transaction, setTransaction] = useState<Transaction>();
   const signTransaction = useSignTransaction({
     multiSigAccount,
     transaction: txData,
-  })
+  });
   useEffect(() => {
     if (txData) {
-      const transaction = algosdk.decodeUnsignedTransaction(Buffer.from(txData.raw_transaction, "base64"))
-      console.log(transaction)
-      setTransaction(transaction)
+      const transaction = algosdk.decodeUnsignedTransaction(
+        Buffer.from(txData.raw_transaction, "base64")
+      );
+      setTransaction(transaction);
     }
-  }, [txData])
+  }, [txData]);
+
+  if (isLoading) {
+    // TODO: Add Spinner
+    return null
+  }
 
   const txOverviewItems: InfoListItem[] = [
     {
@@ -44,48 +56,45 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
     {
       label: "Sender",
       value: (
-        <AddressInfoLabel address={getEncodedAddress(transaction?.from.publicKey)} />
+        <Link to={`/app/multisig-accounts/${multiSigAccount?.address}`}>
+            <AddressInfoLabel
+              address={getEncodedAddress(transaction?.from.publicKey)}
+            />
+        </Link>
       ),
     },
     {
       label: "Receiver",
       value: (
-        <AddressInfoLabel address={getEncodedAddress(transaction?.to.publicKey)} />
+        <AddressInfoLabel
+          address={getEncodedAddress(transaction?.to.publicKey)}
+        />
       ),
     },
     {
       label: "Amount",
-      value: (
-        <AlgoAmountLabel value={transaction?.amount || 0} />
-      ),
+      value: <AlgoAmountLabel value={transaction?.amount || 0} />,
     },
   ];
-  const signedTransactions: SignedTransaction[] = [
-    {
-      id: 1,
-      account: {
-        id: 1,
-        address: 'UXVPARFR5J7BI5RXVZPCO5OE4OWNXEOZ6ZCDO5VFSBNH2IVZAQVQ',
-      },
-      transaction: {
-        id: 1,
-        txn_id: '1234',
-        raw_transaction: '',
-      },
-    },
-    {
-      id: 2,
-      account: {
-        id: 2,
-        address: 'AAVPARFR5J7BI5RXVZPCO5OE4OWNXEOZ6ZCDO5VFSBNH2IVZAQVQ',
-      },
-      transaction: {
-        id: 1,
-        txn_id: '1234',
-        raw_transaction: '',
-      },
+
+  const onSignClick = async () => {
+    try {
+      await signTransaction();
+      refetch();
+      toast.success('Transaction signed!')
+    } catch (e: any) {
+      const error = e as AxiosError
+      if (error.response?.status === 409) {
+        toast.error('You already signed this transaction')
+      } else {
+        toast.error('Could not sign transaction')
+      }
+      console.error(`Could not sign transaction: ${e}`);
     }
-  ]
+  };
+  const signaturesCount = txData?.signed_transactions?.length || 0;
+  const requiredSignaturesTotal = multiSigAccount?.threshold;
+  const alreadySigned = !!txData?.signed_transactions?.find(st => st.signer.address === me?.address)
   return (
     <AppLayout>
       <div className="mx-auto max-w-4xl mt-8">
@@ -96,22 +105,48 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
         <div className="flex items-center justify-between">
           <div className="font-bold text-xl mb-4">Signatures</div>
           <div className="flex items-center">
-            <div className="text-sm mr-2">2 of 3</div>
+            <div className="text-sm mr-2">
+              {signaturesCount} of {requiredSignaturesTotal}
+            </div>
             <progress
               className="progress progress-primary w-32"
-              value="66"
-              max="100"
+              value={signaturesCount}
+              max={requiredSignaturesTotal}
             ></progress>
           </div>
         </div>
         <div className="card bg-base-100 p-2 px-4 mb-8">
-          <SignaturesList  signedTransactions={signedTransactions} />
+          {signaturesCount > 0 ? (
+            <SignaturesList
+              signedTransactions={txData?.signed_transactions || []}
+            />
+          ) : (
+            <div className="text-center p-8">
+              <KeyIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                No signatures
+              </h3>
+              <p className="mt-4 text-sm text-gray-500">
+              No signers have signed this transaction yet
+              </p>
+            </div>
+          )}
         </div>
 
-        <button className="btn btn-lg btn-primary mt-4 btn-block" onClick={() => signTransaction()}>
-          <KeyIcon className="h-6 w-6 mr-1" />
-          Sign Transaction
-        </button>
+        {alreadySigned ? (
+          <div className="text-center text-green-500 flex items-center justify-center">
+            <CheckCircleIcon className="w-5 h-5 mr-1" />
+            You signed this transaction
+          </div>
+        ) : (
+          <button
+            className="btn btn-lg btn-primary mt-4 btn-block"
+            onClick={onSignClick}
+          >
+            <KeyIcon className="h-6 w-6 mr-1" />
+            Sign Transaction
+          </button>
+        )}
       </div>
     </AppLayout>
   );
