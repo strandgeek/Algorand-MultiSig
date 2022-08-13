@@ -21,11 +21,11 @@ func (m *Middlewares) Me() gin.HandlerFunc {
 				return
 			}
 			var acc *model.Account
-			if err = m.db.Model(model.Account{Address: address}).First(&acc).Error; err != nil {
+			if err = m.db.Where("address = ?", address).First(&acc).Error; err != nil {
 				acc = &model.Account{
 					Address: address,
 				}
-				if err := m.db.Model(model.Account{}).Create(acc).Error; err != nil {
+				if err := m.db.Create(acc).Error; err != nil {
 					c.AbortWithError(500, errors.New("could not create address"))
 					return
 				}
