@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"multisigdb-svc/client"
 	"multisigdb-svc/model"
-	"multisigdb-svc/utils"
+
+	b64 "encoding/base64"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/algod"
 	"github.com/algorand/go-algorand-sdk/crypto"
@@ -73,7 +74,7 @@ func (s *BroadcastService) mergeTransactions(txn *model.Transaction) ([]byte, st
 
 	var mergedSignedTxns [][]byte
 	for _, signedTxn := range stxns {
-		decodedTxn, err := utils.Base64Decode(signedTxn.RawSignedTransaction)
+		decodedTxn, err := base64Decode(signedTxn.RawSignedTransaction)
 		if err != nil {
 			s.logger.Error("Error Found in Decoding the transaction with the error message ", zap.Error(err))
 			return nil, "", err
@@ -116,4 +117,12 @@ func (s *BroadcastService) waitForConfirmation(txn *model.Transaction, client *a
 func (s *BroadcastService) updateTxnStatus(txn *model.Transaction, status string) error {
 	txn.Status = status
 	return s.db.Save(&txn).Error
+}
+
+func base64Decode(txn string) ([]byte, error) {
+	sDec, err := b64.StdEncoding.DecodeString(txn)
+	if err != nil {
+		return nil, err
+	}
+	return []byte(sDec), nil
 }

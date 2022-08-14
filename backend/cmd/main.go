@@ -4,8 +4,8 @@ import (
 	"multisigdb-svc/api"
 	"multisigdb-svc/model"
 	"multisigdb-svc/service/broadcastsvc"
-	"multisigdb-svc/utils"
 	"multisigdb-svc/utils/loggerutil"
+	"multisigdb-svc/utils/viperutil"
 	"time"
 
 	gocache "github.com/patrickmn/go-cache"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	utils.LoadViperConfig()
+	viperutil.LoadViperConfig()
 	var err error
 	logger, err := loggerutil.NewLogger()
 	if err != nil {
