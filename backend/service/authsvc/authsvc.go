@@ -74,7 +74,7 @@ func (s *AuthService) Auth(input AuthInput) (*AuthPayload, error) {
 	nonceKey := "AUTH_NONCE:" + input.PubKey
 	nonce, nonceExists := s.cache.Get(nonceKey)
 	if !nonceExists {
-		return nil, err
+		return nil, errors.New("nonce not valid")
 	}
 	ret := algoutil.RawVerifyTransaction(pubkey, stxn.Txn, stxn.Sig[:], nonce.(string))
 	if !ret {
