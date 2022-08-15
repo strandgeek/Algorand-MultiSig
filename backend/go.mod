@@ -5,6 +5,11 @@ go 1.17
 require github.com/google/uuid v1.3.0
 
 require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+)
+
+require (
 	github.com/algorand/go-algorand-sdk v1.17.0
 	github.com/algorand/go-codec/codec v1.1.8 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
@@ -37,6 +42,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.12.0
+	github.com/stretchr/testify v1.8.0
 	github.com/subosito/gotenv v1.3.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
