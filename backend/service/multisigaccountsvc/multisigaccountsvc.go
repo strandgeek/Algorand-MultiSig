@@ -26,7 +26,9 @@ type CreateInput struct {
 	Addresses []string `json:"addresses"`
 }
 
-type ListFilter struct{}
+type ListFilter struct {
+	HasSigner *string
+}
 
 func (s *MultiSigAccountService) Create(input CreateInput) (*model.MultiSigAccount, error) {
 	accounts, err := dbutil.GetOrCreateAccountByAddresses(s.db, input.Addresses)
@@ -66,6 +68,11 @@ func (s *MultiSigAccountService) List(filter *ListFilter, paginate *paginateutil
 	var msaccounts []model.MultiSigAccount
 
 	tx := paginateutil.ApplyGormPaginate(s.db, paginate)
+	if filter.HasSigner != nil {
+		tx = tx.Joins("left join multisig_account_accounts on multisig_account_accounts.multi_sig_account_id = multi_sig_accounts.id")
+		tx = tx.Joins("left join accounts on multisig_account_accounts.account_id = accounts.id")
+		tx = tx.Where("accounts.address = ?", filter.HasSigner)
+	}
 	err := tx.Preload("Accounts").Preload("Transactions").Find(&msaccounts).Error
 
 	return msaccounts, err
@@ -76,5 +83,9 @@ func (s *MultiSigAccountService) GetByAddress(address string) (*model.MultiSigAc
 
 	err := s.db.Preload("Accounts").Where("address = ?", address).First(&msaccount).Error
 
-	return &msaccount, err
+	if err != nil {
+		return nil, err
+	}
+
+	return &msaccount, nil
 }

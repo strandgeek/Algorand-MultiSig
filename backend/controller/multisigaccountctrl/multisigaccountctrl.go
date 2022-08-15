@@ -31,6 +31,24 @@ func (ctrl MultiSigAccountController) Create(ctx *gin.Context) {
 		return
 	}
 
+	// Verify if logged user is a signer
+	me, _ := apiutil.GetMe(ctx)
+	if me == nil {
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+	meIsASigner := false
+	for _, addr := range input.Addresses {
+		if addr == me.Address {
+			meIsASigner = true
+		}
+	}
+
+	if !meIsASigner {
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+
 	msa, err := ctrl.svc.MultiSigAccount.Create(input)
 	if err != nil {
 		apiutil.Abort(ctx, http.StatusBadRequest)
@@ -41,7 +59,15 @@ func (ctrl MultiSigAccountController) Create(ctx *gin.Context) {
 
 // List all MultiSig Account
 func (ctrl *MultiSigAccountController) List(ctx *gin.Context) {
-	msa, err := ctrl.svc.MultiSigAccount.List(&multisigaccountsvc.ListFilter{}, paginateutil.NewPaginateFromApi(ctx))
+	me, _ := apiutil.GetMe(ctx)
+	if me == nil {
+		apiutil.Abort(ctx, http.StatusUnauthorized)
+		return
+	}
+	filter := &multisigaccountsvc.ListFilter{
+		HasSigner: &me.Address,
+	}
+	msa, err := ctrl.svc.MultiSigAccount.List(filter, paginateutil.NewPaginateFromApi(ctx))
 	if err != nil {
 		apiutil.Abort(ctx, http.StatusBadRequest)
 		return
@@ -61,6 +87,11 @@ func (ctrl *MultiSigAccountController) Get(ctx *gin.Context) {
 		apiutil.Abort(ctx, http.StatusNotFound)
 		return
 	}
+	me, _ := apiutil.GetMe(ctx)
+	if !msa.HasSigner(me.Address) {
+		apiutil.Abort(ctx, http.StatusForbidden)
+		return
+	}
 	ctx.JSON(200, msa)
 }
 
@@ -69,6 +100,11 @@ func (ctrl *MultiSigAccountController) GetTransactions(ctx *gin.Context) {
 	msa, err := ctrl.getMultiSigAccountByAddressParam(ctx)
 	if err != nil {
 		apiutil.Abort(ctx, http.StatusNotFound)
+		return
+	}
+	me, _ := apiutil.GetMe(ctx)
+	if !msa.HasSigner(me.Address) {
+		apiutil.Abort(ctx, http.StatusForbidden)
 		return
 	}
 	filter := &transactionsvc.ListFilter{

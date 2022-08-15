@@ -8,6 +8,7 @@ import (
 	"multisigdb-svc/utils/viperutil"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -50,12 +51,14 @@ func main() {
 	broadCastTxnJob.AddFunc("@every 30s", broadcastService.BroadcastAllSignedTxn)
 	broadCastTxnJob.Start()
 
-	api, err := api.SetupApi(db, logger, cache)
+	apiEngine := gin.Default()
+
+	err = api.SetupApi(apiEngine, db, logger, cache)
 	if err != nil {
 		logger.Error("Error while starting the API", zap.Error(err))
 	}
 	addr := viper.GetString("server.host") + ":" + viper.GetString("server.port")
-	if err = api.Run(addr); err != nil {
+	if err = apiEngine.Run(addr); err != nil {
 		logger.Error("Error while binding the port with the error message ", zap.Error(err))
 	}
 }

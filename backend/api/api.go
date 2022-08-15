@@ -14,8 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupApi(db *gorm.DB, logger *zap.Logger, cache *cache.Cache) (*gin.Engine, error) {
-	api := gin.Default()
+func SetupApi(api *gin.Engine, db *gorm.DB, logger *zap.Logger, cache *cache.Cache) error {
 
 	// Service
 	svc := service.NewService(db, cache)
@@ -37,21 +36,21 @@ func SetupApi(db *gorm.DB, logger *zap.Logger, cache *cache.Cache) (*gin.Engine,
 
 			// MultisigAccount routes
 			msaCtrl := multisigaccountctrl.NewMultiSigAccountController(svc)
-			v1.POST("/multisig-accounts", msaCtrl.Create)
-			v1.GET("/multisig-accounts", msaCtrl.List)
-			v1.GET("/multisig-accounts/:msAddress", msaCtrl.Get)
-			v1.GET("/multisig-accounts/:msAddress/transactions", msaCtrl.GetTransactions)
+			v1.POST("/multisig-accounts", m.RequireMe(), msaCtrl.Create)
+			v1.GET("/multisig-accounts", m.RequireMe(), msaCtrl.List)
+			v1.GET("/multisig-accounts/:msAddress", m.RequireMe(), msaCtrl.Get)
+			v1.GET("/multisig-accounts/:msAddress/transactions", m.RequireMe(), msaCtrl.GetTransactions)
 
 			// Transaction routes
 			txnCtrl := transactionctrl.NewTransactionController(svc)
-			v1.POST("/transactions", txnCtrl.Create)
-			v1.GET("/transactions/:txId", txnCtrl.GetByTxId)
+			v1.POST("/transactions", m.RequireMe(), txnCtrl.Create)
+			v1.GET("/transactions/:txId", m.RequireMe(), txnCtrl.GetByTxId)
 
 			// Signed Transaction routes
 			signedTxnCtrl := signedtransactionctrl.NewSignedTransactionController(svc)
-			v1.POST("/signed-transactions", signedTxnCtrl.Create)
+			v1.POST("/signed-transactions", m.RequireMe(), signedTxnCtrl.Create)
 		}
 	}
 
-	return api, nil
+	return nil
 }
