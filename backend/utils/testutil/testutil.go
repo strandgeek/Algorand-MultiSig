@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/algorand/go-algorand-sdk/crypto"
+	"github.com/algorand/go-algorand-sdk/encoding/msgpack"
 	"github.com/algorand/go-algorand-sdk/transaction"
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
@@ -153,4 +154,26 @@ func GenerateAuthTransactionInput(acc crypto.Account, nonce string) (*authsvc.Au
 		PubKey:         addr,
 	}
 	return input, nil
+}
+
+func GenerateRawPaymentTransactionBase64(from string, to string, amount uint64) string {
+	txn, err := transaction.MakePaymentTxnWithFlatFee(
+		from,
+		to,
+		0,
+		amount,
+		0,
+		0,
+		[]byte(""),
+		"",
+		"testnet-v1.0",
+		[]byte("SGO1GKSzyE7IEPItTxCByw9x8FmnrCDexi9/cOUJOiI="),
+	)
+	if err != nil {
+		return ""
+	}
+	var txnBytes = make([]byte, 1e3)
+	base64.StdEncoding.Encode(txnBytes, msgpack.Encode(txn))
+	txnBytes = bytes.Trim(txnBytes, "\x00")
+	return string(txnBytes)
 }

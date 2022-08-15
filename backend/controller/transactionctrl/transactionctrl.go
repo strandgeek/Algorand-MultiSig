@@ -30,13 +30,25 @@ func (ctrl TransactionController) Create(ctx *gin.Context) {
 		return
 	}
 
-	msa, err := ctrl.svc.Transaction.Create(input)
+	msa, err := ctrl.svc.MultiSigAccount.GetByAddress(input.MultiSigAccountAddress)
 	if err != nil {
-		fmt.Println(err)
 		apiutil.Abort(ctx, http.StatusBadRequest)
 		return
 	}
-	ctx.JSON(200, msa)
+
+	txn, err := ctrl.svc.Transaction.Create(input)
+	if err != nil {
+		apiutil.Abort(ctx, http.StatusBadRequest)
+		return
+	}
+
+	me, _ := apiutil.GetMe(ctx)
+	if !msa.HasSigner(me.Address) {
+		apiutil.Abort(ctx, http.StatusForbidden)
+		return
+	}
+
+	ctx.JSON(200, txn)
 }
 
 func (ctrl *TransactionController) getTransactionByTxIdParam(ctx *gin.Context) (*model.Transaction, error) {
@@ -52,5 +64,12 @@ func (ctrl TransactionController) GetByTxId(ctx *gin.Context) {
 		apiutil.Abort(ctx, http.StatusBadRequest)
 		return
 	}
+
+	me, _ := apiutil.GetMe(ctx)
+	if !transaction.MultiSigAccount.HasSigner(me.Address) {
+		apiutil.Abort(ctx, http.StatusForbidden)
+		return
+	}
+
 	ctx.JSON(200, transaction)
 }
