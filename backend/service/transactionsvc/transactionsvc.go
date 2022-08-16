@@ -79,6 +79,7 @@ func (s *TransactionService) List(filter *ListFilter, paginate *paginateutil.Pag
 
 	tx := paginateutil.ApplyGormPaginate(s.db, paginate)
 	tx = applyListFilter(tx, filter)
+	tx = tx.Order("created_at DESC")
 	err := tx.Find(&transactions).Error
 
 	return transactions, err
