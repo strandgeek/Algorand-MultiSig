@@ -1,7 +1,6 @@
 package signedtransactionctrl
 
 import (
-	"fmt"
 	"multisigdb-svc/service"
 	"multisigdb-svc/service/signedtransactionsvc"
 	"multisigdb-svc/utils/apiutil"
@@ -41,7 +40,6 @@ func (ctrl SignedTransactionController) Create(ctx *gin.Context) {
 		if err == signedtransactionsvc.ErrAlreadyExists {
 			status = http.StatusConflict
 		}
-		fmt.Println(err)
 		apiutil.Abort(ctx, status)
 		return
 	}

@@ -114,7 +114,7 @@ func TestGetTransactionByAddress(t *testing.T) {
 		Me:     &acc3,
 	})
 	assert.Equal(t, 403, w.Code)
-	// 3 - Get transaction from an unauthorized account
+	// 3 - Get transaction from an authorized account
 	var txnRes model.Transaction
 	w = ts.RequestApi(testutil.RequestApiOptions{
 		Method: http.MethodGet,

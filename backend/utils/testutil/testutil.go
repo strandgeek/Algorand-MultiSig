@@ -21,6 +21,7 @@ import (
 	"github.com/algorand/go-algorand-sdk/crypto"
 	"github.com/algorand/go-algorand-sdk/encoding/msgpack"
 	"github.com/algorand/go-algorand-sdk/transaction"
+	"github.com/algorand/go-algorand-sdk/types"
 	"github.com/gin-gonic/gin"
 	"github.com/patrickmn/go-cache"
 	"go.uber.org/zap"
@@ -176,4 +177,18 @@ func GenerateRawPaymentTransactionBase64(from string, to string, amount uint64) 
 	base64.StdEncoding.Encode(txnBytes, msgpack.Encode(txn))
 	txnBytes = bytes.Trim(txnBytes, "\x00")
 	return string(txnBytes)
+}
+
+func SignMultisigTransaction(acc crypto.Account, msa crypto.MultisigAccount, rawTransaction string) string {
+	b64TxnBytes := []byte(rawTransaction)
+	recoveredTxn := types.Transaction{}
+	recoveredTxnBytes := make([]byte, 1e3)
+	recoveredTxn = types.Transaction{}
+	base64.StdEncoding.Decode(recoveredTxnBytes, b64TxnBytes)
+	msgpack.Decode(recoveredTxnBytes, &recoveredTxn)
+	_, signedTxn, _ := crypto.SignMultisigTransaction(acc.PrivateKey, msa, recoveredTxn)
+	var signedTxnBytes = make([]byte, 1e3)
+	base64.StdEncoding.Encode(signedTxnBytes, signedTxn)
+	signedTxnBytes = bytes.Trim(signedTxnBytes, "\x00")
+	return string(signedTxnBytes)
 }
