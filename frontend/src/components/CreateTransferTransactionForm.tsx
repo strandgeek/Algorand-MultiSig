@@ -58,7 +58,7 @@ export const CreateTransferTransactionForm: FC<
             type="text"
             placeholder=""
             className={classNames("input input-bordered w-full", {
-              "input-error": methods.formState.errors.amount,
+              "input-error": methods.formState.errors.to,
             })}
             {...methods.register("to")}
           />
