@@ -6,4 +6,6 @@ export interface MultiSigAccount {
   threshold: number
   accounts: Account[]
   address: string
+  created_at: string
+  updated_at: string
 }

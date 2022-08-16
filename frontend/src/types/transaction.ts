@@ -7,4 +7,6 @@ export interface Transaction {
   signed_transactions: SignedTransaction[]
   signed_transactions_count: number;
   status: "PENDING" | "READY" | "BROADCASTING" | "BROADCASTED" | "FAILED";
+  created_at: string;
+  updated_at: string;
 }

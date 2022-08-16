@@ -1,3 +1,4 @@
+import moment from "moment";
 import React, { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { MultiSigAccount } from "../types/multisigAccount";
@@ -16,6 +17,7 @@ export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
 }) => {
   const params = useParams()
   const navigate = useNavigate();
+  const lastUpdate = moment(transaction.updated_at).fromNow();
   const {
     txn_id,
   } = transaction
@@ -38,7 +40,7 @@ export const TransactionsTableRow: FC<TransactionsTableRowProps> = ({
         <StatusLabel status={transaction.status} />
       </td>
       <td className="text-center">
-        <span className="font-normal opacity-70 text-sm">20h ago</span>
+        <span className="font-normal opacity-70 text-sm">{lastUpdate}</span>
       </td>
     </tr>
   );

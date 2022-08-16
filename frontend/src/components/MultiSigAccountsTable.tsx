@@ -1,4 +1,5 @@
 import React, { FC } from "react";
+import moment from 'moment'
 import { useNavigate } from "react-router-dom";
 import { MultiSigAccount } from "../types/multisigAccount";
 import { getIdenticonSrc } from "../utils/getIdenticonSrc";
@@ -10,9 +11,10 @@ export interface MultiSigAccountsTableRowProps {
 }
 
 export const MultiSigAccountsTableRow: FC<MultiSigAccountsTableRowProps> = ({
-  multiSigAccount: { address, accounts },
+  multiSigAccount: { address, accounts, updated_at },
 }) => {
   const navigate = useNavigate()
+  const lastUpdate = moment(updated_at).fromNow();
   return (
     <tr className="cursor-pointer" onClick={() => navigate(`/app/multisig-accounts/${address}`)}>
       <td>
@@ -37,7 +39,7 @@ export const MultiSigAccountsTableRow: FC<MultiSigAccountsTableRowProps> = ({
       </td>
       <td>0 txns</td>
       <td className="text-right">
-        <span className="font-normal opacity-70 text-sm">20h ago</span>
+        <span className="font-normal opacity-70 text-sm">{lastUpdate}</span>
       </td>
     </tr>
   );

@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import React, { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMeQuery } from "../../client/queries";
@@ -7,11 +8,13 @@ import { getShortAddress } from "../../utils/getShortAddress";
 export interface NavbarProps {}
 
 export const Navbar: FC<NavbarProps> = (props) => {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { data: me } = useMeQuery()
   const meAvatar = getIdenticonSrc(me?.address)
   const logout = () => {
     localStorage.removeItem('token')
+    queryClient.clear()
     navigate('/')
   }
   return (

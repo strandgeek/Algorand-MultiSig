@@ -154,7 +154,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
             ></progress>
           </div>
         </div>
-        <div className="card bg-base-100 p-2 px-4 mb-8">
+        <div className="card bg-base-100 p-2 px-4 mb-8 overflow-visible">
           {signaturesCount > 0 ? (
             <SignaturesList
               signedTransactions={txData?.signed_transactions || []}

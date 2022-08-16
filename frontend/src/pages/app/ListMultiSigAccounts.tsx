@@ -1,3 +1,4 @@
+import { KeyIcon } from "@heroicons/react/outline";
 import { FC } from "react";
 import { Link } from "react-router-dom";
 import { useMultiSigAccountsQuery } from "../../client/queries";
@@ -11,8 +12,7 @@ export const ListMultiSigAccounts: FC<ListMultiSigAccountsProps> = () => {
   const { data: multiSigAccounts } = useMultiSigAccountsQuery();
 
   if (!multiSigAccounts) {
-    // TODO: add loading spinner
-    return <LoadingSpinner />
+    return <LoadingSpinner />;
   }
   return (
     <AppLayout>
@@ -26,9 +26,21 @@ export const ListMultiSigAccounts: FC<ListMultiSigAccountsProps> = () => {
             Create
           </Link>
         </div>
-        <div className="overflow-x-auto w-full">
-          <MultiSigAccountsTable multiSigAccounts={multiSigAccounts} />
-        </div>
+        {multiSigAccounts.length > 0 ? (
+          <div className="overflow-x-auto w-full">
+            <MultiSigAccountsTable multiSigAccounts={multiSigAccounts} />
+          </div>
+        ) : (
+          <div className="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center">
+            <KeyIcon className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">
+              No MultiSig Accounts
+            </h3>
+            <p className="mt-4 text-sm text-gray-500">
+              No MultiSig Account have been created yet
+            </p>
+          </div>
+        )}
       </div>
     </AppLayout>
   );
