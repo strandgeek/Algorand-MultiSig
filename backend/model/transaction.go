@@ -1,7 +1,7 @@
 package model
 
 type Transaction struct {
-	Id                      int64               `json:"id" gorm:"column:id"`
+	Model
 	RawTransaction          string              `json:"raw_transaction" gorm:"column:raw_transaction"`
 	TxnId                   string              `json:"txn_id" gorm:"column:txn_id"`
 	Status                  string              `json:"status" gorm:"status"`
