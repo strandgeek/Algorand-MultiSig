@@ -22,7 +22,10 @@ export const Navbar: FC<NavbarProps> = (props) => {
       <div className="navbar max-w-8xl mx-auto">
         <div className="navbar-start">
           <div className="flex-1">
-            <Link to="/app" className="btn btn-ghost normal-case text-xl">TxSigner</Link>
+            <Link to="/app" className="btn btn-ghost normal-case text-xl">
+              <img src="/logo.png" className="h-6 w-6 mr-1" alt="TxSigner" />
+              TxSigner
+            </Link>
           </div>
         </div>
         <div className="navbar-end">
@@ -30,7 +33,7 @@ export const Navbar: FC<NavbarProps> = (props) => {
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost avatar flex items-center">
                 <div className="w-10 rounded-full mr-2">
-                  <img src={meAvatar} />
+                  <img src={meAvatar} alt="User Avatar" />
                 </div>
                 {getShortAddress(me?.address)}
               </label>

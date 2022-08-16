@@ -14,7 +14,7 @@ export const InfoList: FC<InfoListProps> = ({ items }) => {
     <div>
       {items.map(i => (
         <div className="p-4 border-b border-b-base-300 flex items-center text-sm">
-          <span className="text-base-content font-bold text-sm mr-4 w-24 inline-block">
+          <span className="text-base-content font-bold text-sm mr-4 w-32 inline-block">
             {i.label}:
           </span>
           {i.value}

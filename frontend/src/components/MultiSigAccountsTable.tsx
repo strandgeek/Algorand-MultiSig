@@ -37,7 +37,6 @@ export const MultiSigAccountsTableRow: FC<MultiSigAccountsTableRowProps> = ({
       <td>
         <AddressAvatarsStack addresses={accounts.map(acc => acc.address)} />
       </td>
-      <td>0 txns</td>
       <td className="text-right">
         <span className="font-normal opacity-70 text-sm">{lastUpdate}</span>
       </td>
@@ -56,7 +55,6 @@ export const MultiSigAccountsTable: FC<MultiSigAccountsTableProps> = ({ multiSig
         <tr>
           <th>Name</th>
           <th>Signers</th>
-          <th>Transactions</th>
           <th className="text-right">Last Update</th>
         </tr>
       </thead>
