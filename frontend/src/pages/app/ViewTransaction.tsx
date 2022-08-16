@@ -27,6 +27,16 @@ import { getShortAddress } from "../../utils/getShortAddress";
 
 interface ViewTransactionProps {}
 
+
+const TX_TYPE_NAME: { [type: string]: string } = {
+  pay: 'Payment',
+  keyreg: 'Key Registration',
+  acfg: 'Asset Configuration',
+  axfer: 'Asset Transfer',
+  afrz: 'Asset Freeze',
+  appl: 'Application Transaction',
+}
+
 const ViewTransaction: React.FC<ViewTransactionProps> = () => {
   const params = useParams();
   const { data: me } = useMeQuery();
@@ -76,28 +86,60 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
       value: <StatusLabel status={txData!.status} />,
     },
     {
-      label: "Sender",
-      value: (
-        <Link to={`/app/multisig-accounts/${multiSigAccount?.address}`}>
-          <AddressInfoLabel
-            address={getEncodedAddress(transaction?.from.publicKey)}
-          />
-        </Link>
-      ),
-    },
-    {
-      label: "Receiver",
-      value: (
-        <AddressInfoLabel
-          address={getEncodedAddress(transaction?.to.publicKey)}
-        />
-      ),
-    },
-    {
-      label: "Amount",
-      value: <AlgoAmountLabel value={transaction?.amount || 0} />,
+      label: "Type",
+      value: <span className="badge badge-outline">{transaction?.type && TX_TYPE_NAME[transaction?.type]}</span>,
     },
   ];
+
+  const txDetailsItems: InfoListItem[] = []
+
+  if (transaction?.type === 'pay') {
+    txDetailsItems.push(
+      {
+        label: "Sender",
+        value: (
+          <Link to={`/app/multisig-accounts/${multiSigAccount?.address}`}>
+            <AddressInfoLabel
+              address={getEncodedAddress(transaction?.from?.publicKey)}
+            />
+          </Link>
+        ),
+      },
+      {
+        label: "Receiver",
+        value: (
+          <AddressInfoLabel
+            address={getEncodedAddress(transaction?.to?.publicKey)}
+          />
+        ),
+      },
+      {
+        label: "Amount",
+        value: <AlgoAmountLabel value={transaction?.amount || 0} />,
+      },
+    )
+  }
+
+  if (transaction?.type === 'acfg') {
+    txDetailsItems.push(
+      {
+        label: "Asset Name",
+        value: <span>{transaction.assetName}</span>
+      },
+      {
+        label: "Asset Unit Name",
+        value: <span>{transaction.assetUnitName}</span>
+      },
+      {
+        label: "Asset URL",
+        value: <span>{transaction.assetURL}</span>,
+      },
+      {
+        label: "Total",
+        value: <span>{transaction.assetTotal}</span>,
+      },
+    )
+  }
 
   const onSignClick = async () => {
     try {
@@ -141,6 +183,14 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
         <div className="card bg-base-100 mb-8">
           <InfoList items={txOverviewItems} />
         </div>
+        {txDetailsItems.length > 0 && (
+          <>
+            <div className="font-bold text-xl mb-4">Transaction Details</div>
+            <div className="card bg-base-100 mb-8">
+              <InfoList items={txDetailsItems} />
+            </div>
+          </>
+        )}
         <div className="flex items-center justify-between">
           <div className="font-bold text-xl mb-4">Signatures</div>
           <div className="flex items-center">
