@@ -8,11 +8,17 @@ This repo, includes all of the code necessary to facilitate the signing of multi
 - [Ronan Clooney](https://github.com/clooneyr)
 - [Owan Hunte](https://github.com/owanhunte)
 
-## Set-up guide
+## UI Preview
+
+<img width="791" alt="App Screen Shot" src="frontend/public/txsigner-screenshot.png">
+
 
 ## Design Flow
 
 <img width="791" alt="Screen Shot 2022-07-15 at 5 29 56 pm" src="https://user-images.githubusercontent.com/73086339/179174428-20f708bf-8eaf-4f5a-959a-7fa03e857835.png">
+
+
+## Set-up guide
 
 ### Backend
 
@@ -38,6 +44,20 @@ algorand:
   address: https://testnet-algorand.api.purestake.io/ps2
   api_header: X-API-Key
   api_token: <YOUR_API_TOKEN>
+
+auth:
+  jwt_secret: my-jwt-secret
+
+logger:
+  level: "debug"
+  encoding: "json"
+  output_paths:
+    - stdout
+    - logs/out.json
+  error_output_paths:
+    - stdout
+    - logs/out.json
+
 ```
 
 ##### Using Environment Variables
@@ -49,6 +69,11 @@ You can use environment variables to configure the service as well:
 - ALGORAND_ADDRESS
 - ALGORAND_API_HEADER
 - ALGORAND_API_TOKEN
+- AUTH_JWT_SECRET
+- LOGGER_LEVEL
+- LOGGER_ENCODING
+- LOGGER_OUTPUT_PATHS
+- LOGGER_ERROR_OUTPUT_PATHS
 
 
 #### Running the service
@@ -59,14 +84,23 @@ $ go run cmd/main.go
 
 After the above commands have been executed you will have the backend service running on localhost:8081
 
-Now you will have access to the following endpoints (note you will only need the ones with \* next to them):
-Futher documentation of the following endpoints will be avaible in the backend folder
+**Authorization**
+- POST /ms-multisig-db/v1/auth/nonce
+- POST /ms-multisig-db/v1/auth/complete
+- GET /ms-multisig-db/v1/auth/me
 
-- http://localhost:8081/ms-multisig-db/v1/addrawtxn \*
-- http://localhost:8081/ms-multisig-db/v1/getrawtxn?id= \*
-- http://localhost:8081/ms-multisig-db/v1/addsignedtxn \*
-- http://localhost:8081/ms-multisig-db/v1/getsignedtxn/?id=
-- http://localhost:8081/ms-multisig-db/v1/getallsignedtxn/?id=
+**MultiSig Accounts**
+- POST /ms-multisig-db/v1/auth/multisig-accounts
+- GET /ms-multisig-db/v1/auth/multisig-accounts
+- GET /ms-multisig-db/v1/auth/multisig-accounts/:msAddress
+- GET /multisig-accounts/:msAddress/transactions
+
+**Transactions**
+- POST /ms-multisig-db/v1/transactions
+- GET /ms-multisig-db/v1/transactions/:txId
+
+**Signed Transactions**
+- POST /ms-multisig-db/v1/signed-transactions
 
 ### Frontend
 
@@ -78,28 +112,16 @@ cd frontend
 npm i or npm install
 ```
 
-head to utils/algodClient.ts and update the X-API-Key key-pair with your purestake api key.
+Create a `.env` file with the contents:
 
+```
+REACT_APP_API_BASE_URL=http://localhost:8081/ms-multisig/v1
+REACT_APP_EXPLORER_BASE_URL=https://testnet.algoexplorer.io
+```
+
+And start the server:
 ```
 npm start
 ```
 
 After the above commands have been executed you will have the frontend running on localhost:3000
-
-### AlgorandSDK scripts
-
-In this folder you are able to use the provided template to construct the TXN's you would like to be send to the backend to be signed.
-
-```
-cd algo-scripts
-```
-
-```
-npm i or npm install
-```
-
-Create a .env file and store your purestake api in the following format
-
-```
-PURESTAKE_API_TOKEN='example'
-```
