@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMeQuery } from "../../client/queries";
 import { getIdenticonSrc } from "../../utils/getIdenticonSrc";
 import { getShortAddress } from "../../utils/getShortAddress";
@@ -19,21 +19,8 @@ export const Navbar: FC<NavbarProps> = (props) => {
       <div className="navbar max-w-8xl mx-auto">
         <div className="navbar-start">
           <div className="flex-1">
-            <a className="btn btn-ghost normal-case text-xl">TxSigner</a>
+            <Link to="/app" className="btn btn-ghost normal-case text-xl">TxSigner</Link>
           </div>
-        </div>
-        <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal p-0">
-            <li>
-              <a>Item 1</a>
-            </li>
-            <li>
-              <a>Item 2</a>
-            </li>
-            <li>
-              <a>Item 3</a>
-            </li>
-          </ul>
         </div>
         <div className="navbar-end">
           <div className="flex-none">

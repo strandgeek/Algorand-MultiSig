@@ -1,4 +1,8 @@
-import { CheckCircleIcon, ExternalLinkIcon, KeyIcon } from "@heroicons/react/outline";
+import {
+  CheckCircleIcon,
+  ExternalLinkIcon,
+  KeyIcon,
+} from "@heroicons/react/outline";
 import algosdk, { Transaction } from "algosdk";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -12,18 +16,20 @@ import {
 import { AddressInfoLabel } from "../../components/AddressInfoLabel";
 import { AlgoAmountLabel } from "../../components/AlgoAmountLabel";
 import { InfoList, InfoListItem } from "../../components/InfoList";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { SignaturesList } from "../../components/SignaturesList";
 import { StatusLabel } from "../../components/StatusLabel";
 import { useSignTransaction } from "../../hooks/useSignTransaction";
 import { AppLayout } from "../../layouts/AppLayout";
 import { getTransactionUrl } from "../../utils/explorer";
 import { getEncodedAddress } from "../../utils/getEncodedAddress";
+import { getShortAddress } from "../../utils/getShortAddress";
 
 interface ViewTransactionProps {}
 
 const ViewTransaction: React.FC<ViewTransactionProps> = () => {
   const params = useParams();
-  const { data: me } = useMeQuery()
+  const { data: me } = useMeQuery();
   const { data: txData, refetch, isLoading } = useTransactionQuery(params.txId);
   const { data: multiSigAccount } = useMultiSigAccountQuery(params.msaAddress);
   const [transaction, setTransaction] = useState<Transaction>();
@@ -41,8 +47,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
   }, [txData]);
 
   if (isLoading) {
-    // TODO: Add Spinner
-    return null
+    return <LoadingSpinner />
   }
 
   const txOverviewItems: InfoListItem[] = [
@@ -50,12 +55,17 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
       label: "TxID",
       value: (
         <>
-          {txData?.status === 'BROADCASTED' ? (
-            <a className="text-primary flex items-center" href={getTransactionUrl(txData.txn_id)} target="_blank" rel="noreferrer">
+          {txData?.status === "BROADCASTED" ? (
+            <a
+              className="text-primary flex items-center"
+              href={getTransactionUrl(txData.txn_id)}
+              target="_blank"
+              rel="noreferrer"
+            >
               {params.txId}
               <ExternalLinkIcon className="h-4 w-4 ml-2" />
             </a>
-          ): (
+          ) : (
             <span>{params.txId}</span>
           )}
         </>
@@ -69,9 +79,9 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
       label: "Sender",
       value: (
         <Link to={`/app/multisig-accounts/${multiSigAccount?.address}`}>
-            <AddressInfoLabel
-              address={getEncodedAddress(transaction?.from.publicKey)}
-            />
+          <AddressInfoLabel
+            address={getEncodedAddress(transaction?.from.publicKey)}
+          />
         </Link>
       ),
     },
@@ -93,23 +103,40 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
     try {
       await signTransaction();
       refetch();
-      toast.success('Transaction signed!')
+      toast.success("Transaction signed!");
     } catch (e: any) {
-      const error = e as AxiosError
+      const error = e as AxiosError;
       if (error.response?.status === 409) {
-        toast.error('You already signed this transaction')
+        toast.error("You already signed this transaction");
       } else {
-        toast.error('Could not sign transaction')
+        toast.error("Could not sign transaction");
       }
-      console.error(`Could not sign transaction: ${e}`);
+      console.error(`Could not sign transaction: ${e.message}`);
     }
   };
   const signaturesCount = txData?.signed_transactions?.length || 0;
   const requiredSignaturesTotal = multiSigAccount?.threshold;
-  const alreadySigned = !!txData?.signed_transactions?.find(st => st.signer.address === me?.address)
+  const alreadySigned = !!txData?.signed_transactions?.find(
+    st => st.signer.address === me?.address
+  );
   return (
     <AppLayout>
       <div className="mx-auto max-w-4xl mt-8">
+        <div className="text-sm breadcrumbs mb-4">
+          <ul>
+            <li>
+              <Link to="/app/multisig-accounts">MultiSig Accounts</Link>
+            </li>
+            <li>
+              <Link to={`/app/multisig-accounts/${multiSigAccount?.address}`}>
+                MultiSig Account ({getShortAddress(multiSigAccount?.address)})
+              </Link>
+            </li>
+            <li>
+              Transaction ({getShortAddress(txData?.txn_id)})
+            </li>
+          </ul>
+        </div>
         <div className="font-bold text-xl mb-4">Transaction Overview</div>
         <div className="card bg-base-100 mb-8">
           <InfoList items={txOverviewItems} />
@@ -139,7 +166,7 @@ const ViewTransaction: React.FC<ViewTransactionProps> = () => {
                 No signatures
               </h3>
               <p className="mt-4 text-sm text-gray-500">
-              No signers have signed this transaction yet
+                No signers have signed this transaction yet
               </p>
             </div>
           )}

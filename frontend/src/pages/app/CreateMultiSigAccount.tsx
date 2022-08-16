@@ -10,7 +10,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import classNames from "classnames";
 import { useCreateMultisigAccountMutation } from "../../client/mutations";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export interface CreateMultiSigAccountProps {}
@@ -58,6 +58,14 @@ export const CreateMultiSigAccount: FC<CreateMultiSigAccountProps> = props => {
     <AppLayout>
       <div className="flex justify-center mt-12">
         <div className="max-w-xl w-full">
+        <div className="text-sm breadcrumbs mb-4">
+          <ul>
+            <li>
+              <Link to="/app/multisig-accounts">MultiSig Accounts</Link>
+            </li>
+            <li>Create MultiSig Account</li>
+          </ul>
+        </div>
           <div className="card w-full bg-base-100 shadow-xl">
             <div className="card-body">
               <h2 className="card-title">Create MultiSig Account</h2>
