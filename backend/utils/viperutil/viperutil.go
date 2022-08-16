@@ -24,7 +24,8 @@ func LoadViperConfig() {
 	viper.BindEnv("algorand.address", "ALGORAND_ADDRESS")
 	viper.BindEnv("algorand.api_header", "ALGORAND_API_HEADER")
 	viper.BindEnv("algorand.api_token", "ALGORAND_API_TOKEN")
-	viper.BindEnv("algorand.api_token", "ALGORAND_API_TOKEN")
+
+	viper.BindEnv("auth.jwt_secret", "AUTH_JWT_SECRET")
 
 	viper.BindEnv("logger.level", "LOGGER_LEVEL")
 	viper.BindEnv("logger.encoding", "LOGGER_ENCODING")
@@ -44,6 +45,7 @@ func LoadViperConfig() {
 		"algorand.address",
 		"algorand.api_header",
 		"algorand.api_token",
+		"auth.jwt_secret",
 	}
 
 	logger, err := loggerutil.NewLogger()
