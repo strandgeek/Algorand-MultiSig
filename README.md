@@ -2,6 +2,13 @@
 
 This repo, includes all of the code necessary to facilitate the signing of multi-signature transactions without exposing SK's.
 
+## Quick Menu
+
+- [📹 Video - App Demo]()
+- [⚡️ Live Demo (Testnet)](https://txsigner.strandgeek.com/)
+- [📄 Work Plan and User Stories (Notion)](https://kaput-water-8b9.notion.site/Algorand-MultiSig-Bounty-bad9053e69084f92a3e5713583fb8585)
+
+
 ### Contributors
 
 - [Umar Farooq](https://github.com/UmarFarooq-MP)
@@ -85,22 +92,22 @@ $ go run cmd/main.go
 After the above commands have been executed you will have the backend service running on localhost:8081
 
 **Authorization**
-- POST /ms-multisig-db/v1/auth/nonce
-- POST /ms-multisig-db/v1/auth/complete
-- GET /ms-multisig-db/v1/auth/me
+- POST /ms-multisig/v1/auth/nonce
+- POST /ms-multisig/v1/auth/complete
+- GET /ms-multisig/v1/auth/me
 
 **MultiSig Accounts**
-- POST /ms-multisig-db/v1/auth/multisig-accounts
-- GET /ms-multisig-db/v1/auth/multisig-accounts
-- GET /ms-multisig-db/v1/auth/multisig-accounts/:msAddress
-- GET /multisig-accounts/:msAddress/transactions
+- POST /ms-multisig/v1/auth/multisig-accounts
+- GET /ms-multisig/v1/auth/multisig-accounts
+- GET /ms-multisig/v1/auth/multisig-accounts/:msAddress
+- GET /ms-multisig/multisig-accounts/:msAddress/transactions
 
 **Transactions**
-- POST /ms-multisig-db/v1/transactions
-- GET /ms-multisig-db/v1/transactions/:txId
+- POST /ms-multisig/v1/transactions
+- GET /ms-multisig/v1/transactions/:txId
 
 **Signed Transactions**
-- POST /ms-multisig-db/v1/signed-transactions
+- POST /ms-multisig/v1/signed-transactions
 
 ### Frontend
 
