@@ -38,10 +38,11 @@ export const CreateTransferTransactionForm: FC<
   const onSubmit = async (data: CreateTransferTransactionFormData) => {
     const c = await initiateAlgodClient();
     const params = await c.getTransactionParams().do();
+    const microAlgos = data.amount * 1000000
     const txn = algosdk.makePaymentTxnWithSuggestedParams(
       multiSigAccount.address,
       data.to,
-      data.amount,
+      microAlgos,
       undefined,
       undefined,
       params
@@ -65,14 +66,17 @@ export const CreateTransferTransactionForm: FC<
         </FormControl>
         <div className="mt-4">
           <FormControl label="Amount">
-            <input
-              type="number"
-              placeholder=""
-              className={classNames("input input-bordered w-full", {
-                "input-error": methods.formState.errors.amount,
-              })}
-              {...methods.register("amount")}
-            />
+            <div className="relative">
+              <img className="absolute top-0 left-4 mt-4" src={"/algo.png"} width={14} height={14} alt="Algorand Icon" />
+              <input
+                type="number"
+                placeholder=""
+                className={classNames("input input-bordered w-full pl-10", {
+                  "input-error": methods.formState.errors.amount,
+                })}
+                {...methods.register("amount")}
+              />
+            </div>
           </FormControl>
         </div>
         <button type="submit" className="btn btn-primary btn-block mt-8">
