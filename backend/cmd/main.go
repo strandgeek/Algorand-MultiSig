@@ -6,6 +6,7 @@ import (
 	"multisigdb-svc/service/broadcastsvc"
 	"multisigdb-svc/utils/loggerutil"
 	"multisigdb-svc/utils/viperutil"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +19,10 @@ import (
 )
 
 func main() {
+	// Ensure data and logs folder on startup
+	_ = os.Mkdir("data", os.ModePerm)
+	_ = os.Mkdir("logs", os.ModePerm)
+
 	viperutil.LoadViperConfig()
 	var err error
 	logger, err := loggerutil.NewLogger()
