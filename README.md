@@ -4,7 +4,7 @@ This repo, includes all of the code necessary to facilitate the signing of multi
 
 ## Quick Menu
 
-- [📹 Video - App Demo]()
+- [📹 Video - App Demo](https://www.youtube.com/watch?v=IwDzK1tyyo0)
 - [⚡️ Live Demo (Testnet)](https://txsigner.strandgeek.com/)
 - [📄 Work Plan and User Stories (Notion)](https://kaput-water-8b9.notion.site/Algorand-MultiSig-Bounty-bad9053e69084f92a3e5713583fb8585)
 
